@@ -647,6 +647,13 @@ const API = 'https://script.google.com/macros/s/AKfycbxjty_rL0B7iupja9hI2aWVI0Kx
 const KEY = 'LDZ625_COLFER';
 const USER = 'Colfersrl', PASS = 'LDZ625';
 
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+function fmtMes(fecha) {
+  if (!fecha) return '';
+  const p = fecha.split('/');
+  if (p.length === 3) return MESES[parseInt(p[1])-1] + ' ' + p[2];
+  return fecha;
+}
 function fixDate(v) {
   if (!v) return '';
   if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) return v;
@@ -1099,7 +1106,7 @@ function renderProdProveedor(nombre) {
       </div>
       <div class="prov-prod-meta">
         ${equipo?`<span class="prov-prod-tag">⚙️ ${equipo}</span>`:''}
-        ${fecha?`<span class="prov-prod-date">📅 ${fecha}</span>`:''}
+        ${fecha?`<span class="prov-prod-date">📅 ${fmtMes(fecha)}</span>`:''}
       </div>
     </div>`;
   }).join('');
