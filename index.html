@@ -650,9 +650,13 @@ const USER = 'Colfersrl', PASS = 'LDZ625';
 const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
 function fmtMes(fecha) {
   if (!fecha) return '';
+  // DD/MM/YYYY
   const p = fecha.split('/');
-  if (p.length === 3) return MESES[parseInt(p[1])-1] + ' ' + p[2];
-  return fecha;
+  if (p.length === 3 && p[2].length === 4) return MESES[parseInt(p[1])-1] + ' ' + p[2];
+  // cualquier otro formato (ej: "Mon Jan 07 2026 00:00:00 GMT...")
+  const d = new Date(fecha);
+  if (!isNaN(d)) return MESES[d.getMonth()] + ' ' + d.getFullYear();
+  return '';
 }
 function fixDate(v) {
   if (!v) return '';
