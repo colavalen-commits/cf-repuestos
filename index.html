@@ -11,22 +11,24 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{
-  --blue:#1F4E79;--blue2:#2e6fad;--green:#1E5C3A;--bg:#f4f6f8;--card:#fff;
-  --text:#1a1a2e;--sub:#666;--border:#e0e0e0;--gris:#f5f5f5;--nota:#fff8e1;
+  --blue:#1F4E79;--blue2:#2e6fad;--red:#C0392B;--green:#1E5C3A;
+  --bg:#f4f6f8;--card:#fff;--text:#1a1a2e;--sub:#666;--border:#e0e0e0;--nota:#fff8e1;
   --nav-h:62px;
 }
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
 
+/* LOGO SVG */
+.colfer-logo-lg{display:block;margin:0 auto 18px;width:220px;height:60px}
+.colfer-logo-sm{display:inline-block;width:110px;height:30px;vertical-align:middle}
+
 /* LOGIN */
 #login-screen{position:fixed;inset:0;background:var(--blue);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px}
 .login-box{background:#fff;border-radius:18px;padding:32px 28px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.25)}
-.login-logo{font-size:2.5rem;text-align:center;margin-bottom:6px}
-.login-box h2{text-align:center;font-size:1.2rem;color:var(--blue);margin-bottom:4px}
-.login-box p{text-align:center;font-size:0.8rem;color:#888;margin-bottom:22px}
+.login-box p{text-align:center;font-size:0.8rem;color:#888;margin-bottom:22px;margin-top:6px}
 .login-box input{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:1rem;margin-bottom:12px;outline:none;font-family:inherit;transition:border-color 0.2s}
 .login-box input:focus{border-color:var(--blue)}
-.login-box button{width:100%;padding:13px;background:var(--blue);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
-.login-box button:active{background:#163a5c}
+.login-box button{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
+.login-box button:active{background:#922b21}
 .login-error{color:#d32f2f;font-size:0.82rem;text-align:center;margin-top:10px;display:none}
 
 /* LAYOUT */
@@ -42,9 +44,8 @@ nav button.active{color:var(--blue)}
 nav button.active .nav-icon{transform:scale(1.1)}
 
 /* HEADER */
-header{background:var(--blue);color:#fff;padding:16px 16px 12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
+header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
 .header-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-header h1{font-size:1.1rem;font-weight:700}
 .header-sub{font-size:0.72rem;opacity:0.7;margin-top:1px}
 .search-wrap{position:relative}
 .search-wrap input{width:100%;padding:10px 14px 10px 38px;border:none;border-radius:10px;font-size:1rem;background:rgba(255,255,255,0.18);color:#fff;outline:none}
@@ -103,9 +104,10 @@ header h1{font-size:1.1rem;font-weight:700}
 .modal-nota strong{display:block;margin-bottom:4px}
 
 /* DASHBOARD */
-.dash-header{background:var(--blue);color:#fff;padding:20px 16px 16px}
-.dash-header h1{font-size:1.1rem;font-weight:700;margin-bottom:2px}
-.dash-header p{font-size:0.75rem;opacity:0.7}
+.page-header{background:var(--blue);color:#fff;padding:16px 16px 14px}
+.page-header-top{display:flex;align-items:center;gap:10px}
+.page-header h1{font-size:1.05rem;font-weight:700;margin-bottom:2px}
+.page-header p{font-size:0.72rem;opacity:0.7}
 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 12px 0}
 .kpi{background:var(--card);border-radius:14px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
 .kpi-label{font-size:0.72rem;color:var(--sub);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
@@ -114,23 +116,23 @@ header h1{font-size:1.1rem;font-weight:700}
 .kpi-sub{font-size:0.7rem;color:var(--sub);margin-top:2px}
 .chart-section{margin:14px 12px 0;background:var(--card);border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
 .chart-title{font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:12px}
-.chart-wrap{position:relative;height:200px}
 .chart-wrap-tall{position:relative;height:260px}
 
 /* AGREGAR */
-.add-header{background:var(--green);color:#fff;padding:20px 16px 16px}
-.add-header h1{font-size:1.1rem;font-weight:700;margin-bottom:2px}
-.add-header p{font-size:0.75rem;opacity:0.75}
+.add-header{background:var(--green);color:#fff;padding:16px 16px 14px}
+.add-header-top{display:flex;align-items:center;gap:10px}
+.add-header h1{font-size:1.05rem;font-weight:700;margin-bottom:2px}
+.add-header p{font-size:0.72rem;opacity:0.75}
 .add-tabs{display:flex;margin:14px 12px 0;border-radius:12px;overflow:hidden;border:1.5px solid var(--border);background:var(--card)}
 .add-tab{flex:1;padding:10px;text-align:center;font-size:0.85rem;font-weight:600;cursor:pointer;color:var(--sub);border:none;background:none}
 .add-tab.active{background:var(--green);color:#fff}
 .form-wrap{padding:14px 12px}
 .form-group{margin-bottom:14px}
 .form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--sub);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.3px}
-.form-group input,.form-group select,.form-group textarea{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit;outline:none;background:#fff;color:var(--text);transition:border-color 0.2s}
+.form-group input,.form-group select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit;outline:none;background:#fff;color:var(--text);transition:border-color 0.2s}
 .form-group input:focus,.form-group select:focus{border-color:var(--green)}
 .form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px;transition:background 0.2s}
+.btn-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px}
 .btn-submit:active{background:#155027}
 .btn-submit:disabled{background:#aaa;cursor:not-allowed}
 .form-success{background:#d4edda;color:#155724;border-radius:10px;padding:12px 16px;font-size:0.88rem;margin-top:12px;display:none;text-align:center}
@@ -145,24 +147,21 @@ header h1{font-size:1.1rem;font-weight:700}
 .toggle input:checked + .toggle-slider:before{transform:translateX(20px)}
 
 /* CLIENTES */
-.cli-header{background:#5c3d7a;color:#fff;padding:16px 16px 12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-.cli-header h1{font-size:1.1rem;font-weight:700}
-.cli-header p{font-size:0.72rem;opacity:0.7;margin-top:1px}
 .cli-search-wrap{position:relative;margin-top:10px}
 .cli-search-wrap input{width:100%;padding:10px 14px 10px 38px;border:none;border-radius:10px;font-size:1rem;background:rgba(255,255,255,0.18);color:#fff;outline:none}
 .cli-search-wrap input::placeholder{color:rgba(255,255,255,0.6)}
 .cli-search-wrap input:focus{background:rgba(255,255,255,0.25)}
 .cli-card{background:var(--card);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:14px 16px;cursor:pointer;transition:transform 0.1s;display:flex;align-items:center;gap:12px}
 .cli-card:active{transform:scale(0.98)}
-.cli-avatar{width:42px;height:42px;border-radius:50%;background:#e8d5f5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:#5c3d7a;flex-shrink:0}
+.cli-avatar{width:42px;height:42px;border-radius:50%;background:#dce8f5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--blue);flex-shrink:0}
 .cli-card-info{flex:1;min-width:0}
 .cli-card-name{font-size:0.92rem;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .cli-card-loc{font-size:0.75rem;color:var(--sub);margin-top:2px}
-.cli-card-badge{font-size:0.72rem;font-weight:700;color:#5c3d7a;background:#f0e6fa;border-radius:8px;padding:3px 8px;white-space:nowrap;flex-shrink:0}
+.cli-card-badge{font-size:0.72rem;font-weight:700;color:var(--blue);background:#dce8f5;border-radius:8px;padding:3px 8px;white-space:nowrap;flex-shrink:0}
 
 /* DETALLE CLIENTE */
 #cli-detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,20px)}
-.cli-detail-header{background:#5c3d7a;color:#fff;padding:16px}
+.cli-detail-header{background:var(--blue);color:#fff;padding:16px}
 .cli-back-btn{background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:12px;padding:0;font-family:inherit;opacity:0.9}
 .cli-detail-name{font-size:1.1rem;font-weight:700;line-height:1.3}
 .cli-detail-cuit{font-size:0.78rem;opacity:0.75;margin-top:3px}
@@ -177,10 +176,10 @@ header h1{font-size:1.1rem;font-weight:700}
 .cli-stats-title{font-size:0.8rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:12px}
 .cli-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .cli-stat{text-align:center;padding:12px 8px;background:var(--bg);border-radius:10px}
-.cli-stat-val{font-size:1.05rem;font-weight:700;color:#5c3d7a}
+.cli-stat-val{font-size:1.05rem;font-weight:700;color:var(--blue)}
 .cli-stat-lbl{font-size:0.7rem;color:var(--sub);margin-top:3px}
-.cli-edit-btn{display:block;width:calc(100% - 24px);margin:0 12px 12px;padding:14px;background:#5c3d7a;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;text-align:center}
-.cli-edit-btn:active{background:#472e5e}
+.cli-edit-btn{display:block;width:calc(100% - 24px);margin:0 12px 12px;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;text-align:center}
+.cli-edit-btn:active{background:#163a5c}
 
 /* EDIT OVERLAY */
 #cli-edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end}
@@ -190,17 +189,26 @@ header h1{font-size:1.1rem;font-weight:700}
 .cli-edit-modal-header h3{font-size:1rem;font-weight:700}
 .cli-edit-close{background:none;border:none;font-size:1.4rem;color:var(--sub);cursor:pointer;line-height:1}
 .cli-edit-form{padding:16px 18px}
-.cli-edit-form .form-group input:focus{border-color:#5c3d7a}
-.btn-cli-save{width:100%;padding:14px;background:#5c3d7a;color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px}
+.cli-edit-form .form-group input:focus{border-color:var(--blue)}
+.btn-cli-save{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px}
 .btn-cli-save:disabled{background:#aaa}
 </style>
 </head>
 <body>
 
+<!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-logo">🔩</div>
-    <h2>Colfer Repuestos</h2>
+    <!-- Logo Colfer SVG -->
+    <svg class="colfer-logo-lg" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+      <!-- Rombo SC -->
+      <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="#ccc" stroke-width="1.5"/>
+      <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
+      <!-- Barra roja COLFER -->
+      <rect x="50" y="8" width="168" height="44" rx="3" fill="#C0392B"/>
+      <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
+      <text x="206" y="52" text-anchor="end" font-family="Arial,sans-serif" font-weight="700" font-size="10" fill="white" opacity="0.85">S.R.L.</text>
+    </svg>
     <p>Ingresá tus credenciales para continuar</p>
     <input type="text" id="lu" placeholder="Usuario" autocomplete="username" autocorrect="off" autocapitalize="off">
     <input type="password" id="lp" placeholder="Contraseña" autocomplete="current-password">
@@ -214,12 +222,17 @@ header h1{font-size:1.1rem;font-weight:700}
   <div class="tab-content active" id="tab-catalogo">
     <header>
       <div class="header-top">
-        <span style="font-size:1.4rem">🔩</span>
-        <div>
-          <h1>Colfer Repuestos</h1>
+        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
+          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
+          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
+        </svg>
+        <div style="flex:1">
+          <div style="font-size:0.75rem;opacity:0.75;font-weight:600">REPUESTOS</div>
           <div class="header-sub" id="hcount">Cargando...</div>
         </div>
-        <button onclick="recargarCatalogo()" style="margin-left:auto;background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:0.8rem">↻ Sync</button>
+        <button onclick="recargarCatalogo()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:0.8rem">↻ Sync</button>
       </div>
       <div class="search-wrap">
         <span class="search-icon">🔍</span>
@@ -246,9 +259,19 @@ header h1{font-size:1.1rem;font-weight:700}
 
   <!-- TAB: DASHBOARD -->
   <div class="tab-content" id="tab-dashboard">
-    <div class="dash-header">
-      <h1>📊 Dashboard</h1>
-      <p>Resumen de facturación Colfer</p>
+    <div class="page-header">
+      <div class="page-header-top">
+        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
+          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
+          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
+        </svg>
+        <div>
+          <h1>Dashboard</h1>
+          <p>Resumen de facturación</p>
+        </div>
+      </div>
     </div>
     <div id="dash-content">
       <div class="loading"><div class="spinner"></div><p>Cargando datos...</p></div>
@@ -258,15 +281,18 @@ header h1{font-size:1.1rem;font-weight:700}
   <!-- TAB: AGREGAR -->
   <div class="tab-content" id="tab-agregar">
     <div class="add-header">
-      <h1>➕ Agregar</h1>
-      <p>Cargá un producto nuevo o registrá una venta</p>
+      <div class="add-header-top">
+        <span style="font-size:1.5rem">➕</span>
+        <div>
+          <h1>Agregar</h1>
+          <p>Cargá un producto nuevo o registrá una venta</p>
+        </div>
+      </div>
     </div>
     <div class="add-tabs">
       <button class="add-tab active" onclick="switchAddTab('producto')">Producto nuevo</button>
       <button class="add-tab" onclick="switchAddTab('venta')">Registrar venta</button>
     </div>
-
-    <!-- FORM PRODUCTO -->
     <div class="form-wrap" id="form-producto">
       <div class="form-group">
         <label>Nombre del artículo *</label>
@@ -308,8 +334,6 @@ header h1{font-size:1.1rem;font-weight:700}
       <div class="form-success" id="p-ok">✅ Producto guardado correctamente</div>
       <div class="form-error" id="p-err"></div>
     </div>
-
-    <!-- FORM VENTA -->
     <div class="form-wrap" id="form-venta" style="display:none">
       <div class="form-group">
         <label>Artículo *</label>
@@ -339,19 +363,24 @@ header h1{font-size:1.1rem;font-weight:700}
 
   <!-- TAB: CLIENTES -->
   <div class="tab-content" id="tab-clientes">
-    <div class="cli-header">
-      <div class="header-top" style="margin-bottom:0">
-        <span style="font-size:1.4rem">👥</span>
-        <div>
-          <h1>Clientes</h1>
-          <p id="cli-hcount">Cargando...</p>
+    <header>
+      <div class="header-top">
+        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
+          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
+          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
+        </svg>
+        <div style="flex:1">
+          <div style="font-size:0.75rem;opacity:0.75;font-weight:600">CLIENTES</div>
+          <div class="header-sub" id="cli-hcount">Cargando...</div>
         </div>
       </div>
-      <div class="cli-search-wrap">
+      <div class="search-wrap">
         <span class="search-icon">🔍</span>
         <input type="search" id="cli-search" placeholder="Buscar cliente..." autocomplete="off" autocorrect="off" spellcheck="false">
       </div>
-    </div>
+    </header>
     <div class="list" id="cli-list-container" style="padding-top:10px"></div>
   </div>
 
@@ -384,7 +413,7 @@ header h1{font-size:1.1rem;font-weight:700}
   </div>
 </div>
 
-<!-- DETALLE CLIENTE (pantalla completa) -->
+<!-- DETALLE CLIENTE -->
 <div id="cli-detail">
   <div class="cli-detail-header">
     <button class="cli-back-btn" onclick="closeClientDetail()">← Volver</button>
@@ -473,6 +502,8 @@ header h1{font-size:1.1rem;font-weight:700}
 
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbxjty_rL0B7iupja9hI2aWVI0Kxj0q3fI4bGWdqirTvgH6s4BHIhlciUzK_s3F53f_K/exec';
+const KEY = 'LDZ625_COLFER';
+const USER = 'Colfersrl', PASS = 'LDZ625';
 
 function fixDate(v) {
   if (!v) return '';
@@ -481,8 +512,19 @@ function fixDate(v) {
   if (!isNaN(d)) return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
   return v;
 }
-const KEY = 'LDZ625_COLFER';
-const USER = 'Colfersrl', PASS = 'LDZ625';
+
+// Busca stats para un cliente por nombre completo, con fallback parcial
+function findClientStats(nombre) {
+  const key = nombre.toUpperCase();
+  if (STATS_CLI[key]) return STATS_CLI[key];
+  // palabras significativas del nombre completo (más de 3 letras, no palabras genéricas)
+  const skip = new Set(['SOCIEDAD','ANONIMA','LTDA','SRL','S.R.L','SA','S.A','CIA','COMPANIA','THE','LOS','LAS','DEL','DE','LA','EL']);
+  const words = nombre.toUpperCase().split(/[\s.,\-\/()]+/).filter(w => w.length > 3 && !skip.has(w));
+  for (const [k, v] of Object.entries(STATS_CLI)) {
+    if (words.some(w => k.includes(w))) return v;
+  }
+  return null;
+}
 
 let PRODUCTS = [], dashLoaded = false, cliLoaded = false;
 let filter = 'all', sort = 'name', q = '';
@@ -510,11 +552,7 @@ if (sessionStorage.getItem('cf_auth') === '1') {
   initApp();
 }
 
-// ── INIT ──
-function initApp() {
-  recargarCatalogo();
-  setupAutocomplete();
-}
+function initApp() { recargarCatalogo(); }
 
 async function recargarCatalogo() {
   document.getElementById('hcount').textContent = 'Sincronizando...';
@@ -541,17 +579,11 @@ async function recargarCatalogo() {
     setupAutocomplete();
   } catch(e) {
     const cached = sessionStorage.getItem('cf_catalog');
-    if (cached) {
-      PRODUCTS = JSON.parse(cached);
-      renderCatalogo();
-      document.getElementById('hcount').textContent = PRODUCTS.length + ' productos (sin conexión)';
-    } else {
-      document.getElementById('list').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>Sin conexión y sin caché</p></div>';
-    }
+    if (cached) { PRODUCTS = JSON.parse(cached); renderCatalogo(); document.getElementById('hcount').textContent = PRODUCTS.length + ' productos (sin conexión)'; }
+    else document.getElementById('list').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>Sin conexión y sin caché</p></div>';
   }
 }
 
-// ── CATÁLOGO ──
 function isCovema(p) { return p.proveedor && p.proveedor.toUpperCase().includes('COVEMA'); }
 function ftype(p) { return isCovema(p) ? 'COVEMA' : p.tipo; }
 
@@ -565,11 +597,7 @@ function renderCatalogo() {
   }).sort((a,b) => {
     if (sort==='name') return a.articulo.localeCompare(b.articulo,'es');
     if (sort==='price') return (b.precio||0)-(a.precio||0);
-    if (sort==='date') {
-      const da=a.ultimaVenta?a.ultimaVenta.split('/').reverse().join(''):'';
-      const db=b.ultimaVenta?b.ultimaVenta.split('/').reverse().join(''):'';
-      return db.localeCompare(da);
-    }
+    if (sort==='date') { const da=a.ultimaVenta?a.ultimaVenta.split('/').reverse().join(''):''; const db=b.ultimaVenta?b.ultimaVenta.split('/').reverse().join(''):''; return db.localeCompare(da); }
     return 0;
   });
   document.getElementById('hcount').textContent = PRODUCTS.length + ' productos';
@@ -577,11 +605,9 @@ function renderCatalogo() {
   const list = document.getElementById('list');
   if (!f.length) { list.innerHTML='<div class="empty"><div class="emoji">🔍</div><p>No se encontraron productos</p></div>'; return; }
   list.innerHTML = f.map(p => {
-    const t = ftype(p);
     const clis = p.clientes ? p.clientes.split(',').map(s=>s.trim()).filter(Boolean) : [];
     const cliLabel = clis.length===0?'':clis.length===1?clis[0]:clis[0]+' +'+(clis.length-1);
-    const prov = p.proveedor;
-    const provShort = prov.length>20?prov.slice(0,18)+'…':prov;
+    const prov = p.proveedor; const provShort = prov.length>20?prov.slice(0,18)+'…':prov;
     return `<div class="card" onclick="openModal(${PRODUCTS.indexOf(p)})">
       <div class="card-main">
         <div class="card-top">
@@ -610,7 +636,6 @@ function setSort(s) {
   renderCatalogo();
 }
 
-// ── MODAL PRODUCTO ──
 function openModal(idx) {
   const p = PRODUCTS[idx];
   const t = ftype(p);
@@ -640,7 +665,6 @@ let startY=0;
 document.getElementById('modal').addEventListener('touchstart',e=>{startY=e.touches[0].clientY;});
 document.getElementById('modal').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-startY>80)document.getElementById('overlay').classList.remove('open');});
 
-// ── TABS ──
 function showTab(name) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
@@ -651,17 +675,13 @@ function showTab(name) {
 }
 
 // ── DASHBOARD ──
-let chartCli, chartCat;
 async function loadDashboard() {
   try {
     const res = await fetch(`${API}?key=${KEY}&action=getStats`);
     const d = await res.json();
     if (d.error) throw new Error(d.error);
     dashLoaded = true;
-    if (d.porClienteAll) {
-      STATS_CLI = {};
-      d.porClienteAll.forEach(c => { STATS_CLI[c.cliente.toUpperCase()] = c; });
-    }
+    if (d.porClienteAll) { STATS_CLI = {}; d.porClienteAll.forEach(c => { STATS_CLI[c.cliente.toUpperCase()] = c; }); }
     renderDashboard(d);
   } catch(e) {
     document.getElementById('dash-content').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>No se pudo cargar el dashboard</p></div>';
@@ -699,44 +719,16 @@ function renderDashboard(d) {
   const GREENS = ['#1E5C3A','#2e8b57','#3cb371','#66cdaa','#98d8b0','#c5ecd5','#e2f7eb','#f0fbf4','#a8d8b9','#7bc4a0','#52a87d','#3d7a5c','#2a5a3f','#1a3d28'];
 
   new Chart(document.getElementById('chartFactCli'), {
-    type: 'bar',
-    data: {
-      labels: d.topClientes.map(c => c.cliente.split(' ')[0]),
-      datasets: [{
-        label: 'Facturas',
-        data: d.topClientes.map(c => c.facturas),
-        backgroundColor: BLUES,
-        borderRadius: 6,
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {legend:{display:false}, tooltip:{callbacks:{label:c=>c.raw+' facturas'}}},
-      scales: {
-        x: {ticks:{stepSize:1, font:{size:11}}, grid:{color:'#f0f0f0'}},
-        y: {ticks:{font:{size:11}}, grid:{display:false}}
-      }
-    }
+    type:'bar', data:{labels:d.topClientes.map(c=>c.cliente.split(' ')[0]),datasets:[{label:'Facturas',data:d.topClientes.map(c=>c.facturas),backgroundColor:BLUES,borderRadius:6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' facturas'}}},scales:{x:{ticks:{stepSize:1,font:{size:11}},grid:{color:'#f0f0f0'}},y:{ticks:{font:{size:11}},grid:{display:false}}}}
   });
-
-  chartCli = new Chart(document.getElementById('chartCli'), {
-    type: 'bar',
-    data: {
-      labels: d.topClientes.map(c => c.cliente.split(' ')[0]),
-      datasets: [{data: d.topClientes.map(c=>c.bruto), backgroundColor: BLUES, borderRadius:6}]
-    },
-    options: {indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)},grid:{color:'#f0f0f0'}},y:{grid:{display:false}}}}
+  new Chart(document.getElementById('chartCli'), {
+    type:'bar', data:{labels:d.topClientes.map(c=>c.cliente.split(' ')[0]),datasets:[{data:d.topClientes.map(c=>c.bruto),backgroundColor:BLUES,borderRadius:6}]},
+    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)},grid:{color:'#f0f0f0'}},y:{grid:{display:false}}}}
   });
-
-  chartCat = new Chart(document.getElementById('chartCat'), {
-    type: 'doughnut',
-    data: {
-      labels: d.porCategoria.map(c=>c.categoria),
-      datasets: [{data: d.porCategoria.map(c=>c.total), backgroundColor: GREENS, borderWidth:2, borderColor:'#fff'}]
-    },
-    options: {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}}}
+  new Chart(document.getElementById('chartCat'), {
+    type:'doughnut', data:{labels:d.porCategoria.map(c=>c.categoria),datasets:[{data:d.porCategoria.map(c=>c.total),backgroundColor:GREENS,borderWidth:2,borderColor:'#fff'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}}}
   });
 }
 
@@ -752,7 +744,6 @@ async function loadClientes() {
     ]);
     CLIENTES = await resCli.json();
     if (CLIENTES.error) throw new Error(CLIENTES.error);
-
     if (resStats) {
       const stats = await resStats.json();
       if (!stats.error && stats.porClienteAll) {
@@ -777,11 +768,11 @@ function renderClientes() {
   });
   const container = document.getElementById('cli-list-container');
   if (!filtered.length) { container.innerHTML='<div class="empty"><div class="emoji">🔍</div><p>No se encontraron clientes</p></div>'; return; }
-  container.innerHTML = filtered.map((c,i) => {
+  container.innerHTML = filtered.map(c => {
     const nombre = c.NOMBRE || 'Sin nombre';
     const inicial = nombre.charAt(0).toUpperCase();
     const loc = [c.LOCALIDAD, c.PROVINCIA].filter(Boolean).join(', ');
-    const stats = STATS_CLI[(nombre).toUpperCase()];
+    const stats = findClientStats(nombre);
     const badge = stats ? fmt(stats.bruto) : '';
     return `<div class="cli-card" onclick="openClientDetail('${nombre.replace(/'/g,"\\'")}')">
       <div class="cli-avatar">${inicial}</div>
@@ -800,32 +791,25 @@ function openClientDetail(nombre) {
   const c = CLIENTES.find(x => x.NOMBRE === nombre);
   if (!c) return;
   currentClient = c;
-  const stats = STATS_CLI[(nombre).toUpperCase()];
-
+  const stats = findClientStats(nombre);
   document.getElementById('cd-name').textContent = c.NOMBRE || '';
   document.getElementById('cd-cuit').textContent = c.CUIT ? 'CUIT: ' + c.CUIT : 'Sin CUIT registrado';
-
   const setVal = (id, val) => {
     const el = document.getElementById(id);
     if (val) { el.textContent = val; el.classList.remove('empty-val'); }
     else { el.textContent = 'Sin datos'; el.classList.add('empty-val'); }
   };
   setVal('cd-dir', c.DIRECCION);
-  setVal('cd-loc', [c.LOCALIDAD, c.PROVINCIA].filter(Boolean).join(', ') || c.LOCALIDAD);
+  setVal('cd-loc', [c.LOCALIDAD, c.PROVINCIA].filter(Boolean).join(', '));
   setVal('cd-tel', c.TEL);
   setVal('cd-contacto', c.CONTACTO);
-
   document.getElementById('cd-total').textContent = stats ? fmt(stats.bruto) : '—';
   document.getElementById('cd-facturas').textContent = stats ? stats.facturas : '—';
-
   document.getElementById('cli-detail').style.display = 'block';
   document.getElementById('cli-detail').scrollTop = 0;
 }
 
-function closeClientDetail() {
-  document.getElementById('cli-detail').style.display = 'none';
-  currentClient = null;
-}
+function closeClientDetail() { document.getElementById('cli-detail').style.display='none'; currentClient=null; }
 
 function openClientEdit() {
   if (!currentClient) return;
@@ -840,19 +824,17 @@ function openClientEdit() {
 }
 
 function closeClientEdit(e) {
-  if (!e || e.target === document.getElementById('cli-edit-overlay')) {
+  if (!e || e.target === document.getElementById('cli-edit-overlay'))
     document.getElementById('cli-edit-overlay').classList.remove('open');
-  }
 }
 
 async function submitClientEdit() {
   if (!currentClient) return;
   const btn = document.getElementById('e-btn');
-  btn.disabled = true; btn.textContent = 'Guardando...';
+  btn.disabled=true; btn.textContent='Guardando...';
   try {
     const params = new URLSearchParams({
-      key: KEY, action: 'updateCliente',
-      nombre: currentClient.NOMBRE,
+      key:KEY, action:'updateCliente', nombre:currentClient.NOMBRE,
       cuit: document.getElementById('e-cuit').value.trim(),
       direccion: document.getElementById('e-dir').value.trim(),
       localidad: document.getElementById('e-loc').value.trim(),
@@ -863,25 +845,18 @@ async function submitClientEdit() {
     const res = await fetch(`${API}?${params}`);
     const d = await res.json();
     if (d.error) throw new Error(d.error);
-
-    // actualizar datos locales
     currentClient.CUIT = document.getElementById('e-cuit').value.trim();
     currentClient.DIRECCION = document.getElementById('e-dir').value.trim();
     currentClient.LOCALIDAD = document.getElementById('e-loc').value.trim();
     currentClient.PROVINCIA = document.getElementById('e-prov').value.trim();
     currentClient.TEL = document.getElementById('e-tel').value.trim();
     currentClient.CONTACTO = document.getElementById('e-contacto').value.trim();
-
     document.getElementById('e-ok').style.display='block';
-    setTimeout(()=>{
-      document.getElementById('e-ok').style.display='none';
-      document.getElementById('cli-edit-overlay').classList.remove('open');
-      openClientDetail(currentClient.NOMBRE);
-    }, 1500);
+    setTimeout(()=>{ document.getElementById('e-ok').style.display='none'; document.getElementById('cli-edit-overlay').classList.remove('open'); openClientDetail(currentClient.NOMBRE); }, 1500);
   } catch(e) {
-    document.getElementById('e-err').textContent = 'Error: ' + e.message;
-    document.getElementById('e-err').style.display = 'block';
-    setTimeout(()=>document.getElementById('e-err').style.display='none', 4000);
+    document.getElementById('e-err').textContent='Error: '+e.message;
+    document.getElementById('e-err').style.display='block';
+    setTimeout(()=>document.getElementById('e-err').style.display='none',4000);
   }
   btn.disabled=false; btn.textContent='Guardar cambios';
 }
@@ -893,29 +868,17 @@ function switchAddTab(t) {
   document.getElementById('form-producto').style.display = t==='producto'?'block':'none';
   document.getElementById('form-venta').style.display = t==='venta'?'block':'none';
 }
-
 function toggleCodigo() {
-  const interno = document.getElementById('p-interno').checked;
-  document.getElementById('codigo-manual-wrap').style.display = interno?'none':'block';
+  document.getElementById('codigo-manual-wrap').style.display = document.getElementById('p-interno').checked?'none':'block';
 }
-
 function setupAutocomplete() {
   const arts = PRODUCTS.map(p=>p.articulo);
   const provs = [...new Set(PRODUCTS.map(p=>p.proveedor).filter(Boolean))].sort();
   const clis = [...new Set(PRODUCTS.flatMap(p=>p.clientes?p.clientes.split(',').map(s=>s.trim()):[])).values()].filter(Boolean).sort();
-
-  ['art-list'].forEach(id => {
-    const dl = document.getElementById(id);
-    if(dl) dl.innerHTML = arts.map(a=>`<option value="${a}">`).join('');
-  });
-  ['prov-list'].forEach(id => {
-    const dl = document.getElementById(id);
-    if(dl) dl.innerHTML = provs.map(p=>`<option value="${p}">`).join('');
-  });
-  ['cli-list','cli-list2'].forEach(id => {
-    const dl = document.getElementById(id);
-    if(dl) dl.innerHTML = clis.map(c=>`<option value="${c}">`).join('');
-  });
+  const dl = id => document.getElementById(id);
+  if(dl('art-list')) dl('art-list').innerHTML = arts.map(a=>`<option value="${a}">`).join('');
+  if(dl('prov-list')) dl('prov-list').innerHTML = provs.map(p=>`<option value="${p}">`).join('');
+  ['cli-list','cli-list2'].forEach(id => { if(dl(id)) dl(id).innerHTML = clis.map(c=>`<option value="${c}">`).join(''); });
 }
 
 async function submitProducto() {
@@ -926,19 +889,13 @@ async function submitProducto() {
   if (!articulo || !proveedor || !precio) { showMsg('p-err','Completá artículo, proveedor y precio'); return; }
   btn.disabled=true; btn.textContent='Guardando...';
   try {
-    const interno = document.getElementById('p-interno').checked;
-    const params = new URLSearchParams({
-      key:KEY, action:'addProducto',
-      tipo: interno?'INTERNO':'ORIGINAL',
-      articulo, proveedor,
-      codigo: document.getElementById('p-codigo').value.trim(),
-      moneda: document.getElementById('p-moneda').value,
-      precio,
-      costo: document.getElementById('p-costo').value.trim(),
-      cliente: document.getElementById('p-cliente').value.trim(),
+    const params = new URLSearchParams({ key:KEY, action:'addProducto',
+      tipo: document.getElementById('p-interno').checked?'INTERNO':'ORIGINAL',
+      articulo, proveedor, codigo: document.getElementById('p-codigo').value.trim(),
+      moneda: document.getElementById('p-moneda').value, precio,
+      costo: document.getElementById('p-costo').value.trim(), cliente: document.getElementById('p-cliente').value.trim(),
     });
-    const res = await fetch(`${API}?${params}`);
-    const d = await res.json();
+    const d = await (await fetch(`${API}?${params}`)).json();
     if (d.error) throw new Error(d.error);
     showMsg('p-ok', `✅ Producto guardado${d.codigo?' con código '+d.codigo:''}`);
     document.querySelectorAll('#form-producto input').forEach(i=>i.value='');
@@ -957,16 +914,11 @@ async function submitVenta() {
   btn.disabled=true; btn.textContent='Registrando...';
   try {
     const prod = PRODUCTS.find(p=>p.articulo.toUpperCase()===articulo.toUpperCase());
-    const params = new URLSearchParams({
-      key:KEY, action:'addVenta',
-      articulo, cliente,
-      codigo: prod?prod.codigo:'',
-      proveedor: prod?prod.proveedor:'',
-      moneda: document.getElementById('v-moneda').value,
-      precio,
+    const params = new URLSearchParams({ key:KEY, action:'addVenta',
+      articulo, cliente, codigo: prod?prod.codigo:'', proveedor: prod?prod.proveedor:'',
+      moneda: document.getElementById('v-moneda').value, precio,
     });
-    const res = await fetch(`${API}?${params}`);
-    const d = await res.json();
+    const d = await (await fetch(`${API}?${params}`)).json();
     if (d.error) throw new Error(d.error);
     showMsg('v-ok','✅ Venta registrada correctamente');
     document.querySelectorAll('#form-venta input').forEach(i=>i.value='');
