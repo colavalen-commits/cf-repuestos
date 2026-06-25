@@ -520,7 +520,7 @@ function renderDashboard(d) {
     </div>
     <div class="chart-section">
       <div class="chart-title">Facturación mensual s/IVA</div>
-      <div style="position:relative;height:240px"><canvas id="chartMes"></canvas></div>
+      <div id="mes-list"></div>
     </div>
     <div class="chart-section">
       <div class="chart-title">Top clientes</div>
@@ -535,57 +535,24 @@ function renderDashboard(d) {
   const GREENS = ['#1E5C3A','#2e8b57','#3cb371','#66cdaa','#98d8b0','#c5ecd5','#e2f7eb','#f0fbf4','#a8d8b9','#7bc4a0','#52a87d','#3d7a5c','#2a5a3f','#1a3d28'];
 
   // Mes chart
+  const maxBruto = Math.max(...d.porMes.map(m => m.bruto));
   const nombres = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
-  const mesLabels = d.porMes.map(m => {
-    const raw = m.mes || '';
-    // Formato "2026-01"
-    if (/^\d{4}-\d{2}$/.test(raw)) {
-      const [y, mo] = raw.split('-');
-      return (nombres[parseInt(mo)-1] || mo) + ' ' + y.slice(2);
-    }
-    // Formato "01/2026" o "01-2026"
-    const parts = raw.split(/[-\/]/);
-    if (parts.length === 2) {
-      const mo = parseInt(parts[0]) <= 12 ? parts[0] : parts[1];
-      const y = parseInt(parts[0]) > 12 ? parts[0] : parts[1];
-      return (nombres[parseInt(mo)-1] || mo) + ' ' + String(y).slice(-2);
-    }
+  function mesLabel(raw) {
+    if (!raw) return '';
+    const d = new Date(raw + '-01');
+    if (!isNaN(d)) return nombres[d.getMonth()] + ' ' + String(d.getFullYear()).slice(2);
     return raw;
-  });
-  chartMes = new Chart(document.getElementById('chartMes'), {
-    type: 'bar',
-    data: {
-      labels: mesLabels,
-      datasets: [{
-        data: d.porMes.map(m => m.bruto),
-        backgroundColor: '#2e6fad',
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {display:false},
-        tooltip: {callbacks:{label: c => fmt(c.raw)}}
-      },
-      scales: {
-        y: {
-          ticks: {
-            callback: v => fmt(v),
-            font: {size:10},
-            maxTicksLimit: 5,
-          },
-          grid: {color:'#f0f0f0'}
-        },
-        x: {
-          ticks: {font:{size:11}, maxRotation:0},
-          grid: {display:false}
-        }
-      }
-    }
-  });
+  }
+  document.getElementById('mes-list').innerHTML = d.porMes.map(m => {
+    const pct = Math.round((m.bruto / maxBruto) * 100);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid #f0f0f0">
+      <div style="width:52px;font-size:0.8rem;font-weight:600;color:#444;flex-shrink:0">${mesLabel(m.mes)}</div>
+      <div style="flex:1;background:#f0f0f0;border-radius:6px;height:20px;overflow:hidden">
+        <div style="width:${pct}%;background:#2e6fad;height:100%;border-radius:6px;transition:width 0.4s"></div>
+      </div>
+      <div style="width:60px;text-align:right;font-size:0.78rem;font-weight:700;color:#1F4E79;flex-shrink:0">${fmt(m.bruto)}</div>
+    </div>`;
+  }).join('');
 
   // Clientes chart
   chartCli = new Chart(document.getElementById('chartCli'), {
