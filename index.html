@@ -370,7 +370,7 @@ async function recargarCatalogo() {
       moneda: p['Moneda'] || 'USD',
       precio: parseFloat(p['Precio Venta']) || null,
       costo: parseFloat(p['Costo']) || null,
-      margen: parseFloat(p['Margen %']) || null,
+      margen: (() => { const v = parseFloat(p['Margen %']); if (!v || isNaN(v)) return null; return v < 1 ? Math.round(v * 10000) / 100 : Math.round(v * 100) / 100; })(),
       ultimaVenta: fixDate(p['Última Venta']),
       clientes: p['Clientes'] || '',
       notas: p['Notas'] || '',
