@@ -146,6 +146,24 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
 .toggle input:checked + .toggle-slider{background:var(--green)}
 .toggle input:checked + .toggle-slider:before{transform:translateX(20px)}
 
+/* PROVEEDORES */
+.prov-prod-card{background:var(--bg);border-radius:10px;padding:11px 14px;margin-bottom:8px;cursor:pointer;transition:transform 0.1s}
+.prov-prod-card:active{transform:scale(0.98)}
+.prov-prod-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.prov-prod-name{font-size:0.88rem;font-weight:600;line-height:1.3;flex:1}
+.prov-prod-price{font-size:0.95rem;font-weight:700;color:var(--blue);white-space:nowrap}
+.prov-prod-meta{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
+.prov-prod-tag{font-size:0.68rem;padding:2px 8px;border-radius:8px;font-weight:600;background:#e8f4fd;color:var(--blue)}
+.prov-prod-date{font-size:0.68rem;color:var(--sub)}
+.prov-section-title{font-size:0.78rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;padding:14px 16px 8px}
+.prov-add-btn{display:block;width:calc(100% - 24px);margin:0 12px 8px;padding:11px;background:var(--bg);color:var(--blue);border:2px dashed var(--blue2);border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:inherit;text-align:center}
+.prov-add-btn:active{background:#dce8f5}
+
+/* PROD EDIT OVERLAY */
+#prov-prod-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end}
+#prov-prod-overlay.open{display:flex}
+.prov-prod-modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom,20px);animation:slideUp 0.25s ease}
+
 /* CLIENTES */
 .cli-search-wrap{position:relative;margin-top:10px}
 .cli-search-wrap input{width:100%;padding:10px 14px 10px 38px;border:none;border-radius:10px;font-size:1rem;background:rgba(255,255,255,0.18);color:#fff;outline:none}
@@ -160,7 +178,7 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
 .cli-card-badge{font-size:0.72rem;font-weight:700;color:var(--blue);background:#dce8f5;border-radius:8px;padding:3px 8px;white-space:nowrap;flex-shrink:0}
 
 /* DETALLE CLIENTE */
-#cli-detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,20px)}
+#cli-detail,#prov-detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,20px)}
 .cli-detail-header{background:var(--blue);color:#fff;padding:16px}
 .cli-back-btn{background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:12px;padding:0;font-family:inherit;opacity:0.9}
 .cli-detail-name{font-size:1.1rem;font-weight:700;line-height:1.3}
@@ -182,8 +200,8 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
 .cli-edit-btn:active{background:#163a5c}
 
 /* EDIT OVERLAY */
-#cli-edit-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end}
-#cli-edit-overlay.open{display:flex}
+#cli-edit-overlay,#prov-edit-overlay,#prov-prod-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end}
+#cli-edit-overlay.open,#prov-edit-overlay.open,#prov-prod-overlay.open{display:flex}
 .cli-edit-modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom,20px);animation:slideUp 0.25s ease}
 .cli-edit-modal-header{padding:16px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
 .cli-edit-modal-header h3{font-size:1rem;font-weight:700}
@@ -384,6 +402,29 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     <div class="list" id="cli-list-container" style="padding-top:10px"></div>
   </div>
 
+  <!-- TAB: PROVEEDORES -->
+  <div class="tab-content" id="tab-proveedores">
+    <header>
+      <div class="header-top">
+        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
+          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
+          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
+        </svg>
+        <div style="flex:1">
+          <div style="font-size:0.75rem;opacity:0.75;font-weight:600">PROVEEDORES</div>
+          <div class="header-sub" id="prov-hcount">Cargando...</div>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input type="search" id="prov-search" placeholder="Buscar proveedor o producto..." autocomplete="off" autocorrect="off" spellcheck="false">
+      </div>
+    </header>
+    <div class="list" id="prov-list-container" style="padding-top:10px"></div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav>
     <button class="active" onclick="showTab('catalogo')" id="nav-catalogo">
@@ -397,6 +438,9 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     </button>
     <button onclick="showTab('clientes')" id="nav-clientes">
       <span class="nav-icon">👥</span>Clientes
+    </button>
+    <button onclick="showTab('proveedores')" id="nav-proveedores">
+      <span class="nav-icon">🏭</span>Proveed.
     </button>
   </nav>
 </div>
@@ -456,6 +500,104 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     </div>
   </div>
   <button class="cli-edit-btn" onclick="openClientEdit()">✏️ Editar datos</button>
+</div>
+
+<!-- DETALLE PROVEEDOR -->
+<div id="prov-detail">
+  <div class="cli-detail-header">
+    <button class="cli-back-btn" onclick="closeProvDetail()">← Volver</button>
+    <div class="cli-detail-name" id="pd-name"></div>
+    <div class="cli-detail-cuit" id="pd-pago"></div>
+  </div>
+  <div class="cli-info-card">
+    <div class="cli-info-row">
+      <span class="cli-info-icon">👤</span>
+      <span class="cli-info-label">Principal</span>
+      <span class="cli-info-val" id="pd-contacto"></span>
+    </div>
+    <div class="cli-info-row">
+      <span class="cli-info-icon">📞</span>
+      <span class="cli-info-label">Teléfono</span>
+      <span class="cli-info-val" id="pd-tel"></span>
+    </div>
+    <div class="cli-info-row" id="pd-alt-row">
+      <span class="cli-info-icon">👥</span>
+      <span class="cli-info-label">Alternativos</span>
+      <span class="cli-info-val" id="pd-alt"></span>
+    </div>
+  </div>
+  <button class="cli-edit-btn" onclick="openProvEdit()">✏️ Editar contactos</button>
+  <div class="prov-section-title">Catálogo de productos</div>
+  <div style="padding:0 12px 12px">
+    <div id="pd-productos"></div>
+    <button class="prov-add-btn" onclick="openProdAdd()">+ Agregar producto</button>
+  </div>
+</div>
+
+<!-- EDIT OVERLAY PROVEEDOR (contactos) -->
+<div id="prov-edit-overlay" onclick="closeProvEdit(event)">
+  <div class="cli-edit-modal">
+    <div class="modal-handle"></div>
+    <div class="cli-edit-modal-header">
+      <h3>Editar contactos</h3>
+      <button class="cli-edit-close" onclick="document.getElementById('prov-edit-overlay').classList.remove('open')">×</button>
+    </div>
+    <div class="cli-edit-form">
+      <div class="form-group">
+        <label>Contacto principal</label>
+        <input type="text" id="pe-contacto" placeholder="Nombre">
+      </div>
+      <div class="form-group">
+        <label>Teléfono principal</label>
+        <input type="tel" id="pe-tel" placeholder="11 1234-5678">
+      </div>
+      <div class="form-group">
+        <label>Contactos alternativos</label>
+        <input type="text" id="pe-alt" placeholder="Nombre|tel; Nombre2|tel2">
+      </div>
+      <div class="form-group">
+        <label>Forma de pago</label>
+        <input type="text" id="pe-pago" placeholder="Ej: Cta. Corriente 30 días">
+      </div>
+      <button class="btn-cli-save" id="pe-btn" onclick="submitProvEdit()">Guardar cambios</button>
+      <div class="form-success" id="pe-ok">✅ Datos actualizados</div>
+      <div class="form-error" id="pe-err"></div>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT/ADD OVERLAY PRODUCTO PROVEEDOR -->
+<div id="prov-prod-overlay" onclick="closeProdEdit(event)">
+  <div class="prov-prod-modal">
+    <div class="modal-handle"></div>
+    <div class="cli-edit-modal-header">
+      <h3 id="pp-title">Editar producto</h3>
+      <button class="cli-edit-close" onclick="document.getElementById('prov-prod-overlay').classList.remove('open')">×</button>
+    </div>
+    <div class="cli-edit-form">
+      <div class="form-group">
+        <label>Producto *</label>
+        <input type="text" id="pp-producto" placeholder="Nombre del producto">
+      </div>
+      <div class="form-group">
+        <label>Equipo / Marca</label>
+        <input type="text" id="pp-equipo" placeholder="Ej: WIRTGEN, HAMM...">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Precio compra</label>
+          <input type="text" id="pp-compra" placeholder="$ 0,00">
+        </div>
+        <div class="form-group">
+          <label>Precio venta</label>
+          <input type="text" id="pp-venta" placeholder="$ 0,00">
+        </div>
+      </div>
+      <button class="btn-cli-save" id="pp-btn" onclick="submitProdEdit()">Guardar</button>
+      <div class="form-success" id="pp-ok">✅ Guardado</div>
+      <div class="form-error" id="pp-err"></div>
+    </div>
+  </div>
 </div>
 
 <!-- EDIT OVERLAY CLIENTE -->
@@ -672,6 +814,7 @@ function showTab(name) {
   document.getElementById('nav-'+name).classList.add('active');
   if (name==='dashboard' && !dashLoaded) loadDashboard();
   if (name==='clientes' && !cliLoaded) loadClientes();
+  if (name==='proveedores' && !provLoaded) loadProveedores();
 }
 
 // ── DASHBOARD ──
@@ -859,6 +1002,203 @@ async function submitClientEdit() {
     setTimeout(()=>document.getElementById('e-err').style.display='none',4000);
   }
   btn.disabled=false; btn.textContent='Guardar cambios';
+}
+
+// ── PROVEEDORES ──
+let PROVEEDORES = [], PROD_PROV = [], provLoaded = false, provQ = '';
+let currentProv = null, currentProdIdx = null, prodEditMode = 'edit';
+
+async function loadProveedores() {
+  document.getElementById('prov-hcount').textContent = 'Cargando...';
+  document.getElementById('prov-list-container').innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando...</p></div>';
+  try {
+    const [rProv, rProd] = await Promise.all([
+      fetch(`${API}?key=${KEY}&action=getProveedores`),
+      fetch(`${API}?key=${KEY}&action=getProdProveedores`),
+    ]);
+    PROVEEDORES = await rProv.json();
+    PROD_PROV   = await rProd.json();
+    if (PROVEEDORES.error) throw new Error(PROVEEDORES.error);
+    provLoaded = true;
+    document.getElementById('prov-hcount').textContent = PROVEEDORES.length + ' proveedores';
+    renderProveedores();
+  } catch(e) {
+    document.getElementById('prov-list-container').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>No se pudo cargar</p></div>';
+  }
+}
+
+function renderProveedores() {
+  const filtered = PROVEEDORES.filter(p => {
+    if (!provQ) return true;
+    const s = provQ.toLowerCase();
+    return (p.NOMBRE||'').toLowerCase().includes(s) ||
+           (p.CONTACTO_PRINCIPAL||'').toLowerCase().includes(s) ||
+           PROD_PROV.filter(x=>x.PROVEEDOR===p.NOMBRE).some(x=>(x.PRODUCTO||'').toLowerCase().includes(s));
+  });
+  const container = document.getElementById('prov-list-container');
+  if (!filtered.length) { container.innerHTML='<div class="empty"><div class="emoji">🔍</div><p>Sin resultados</p></div>'; return; }
+  container.innerHTML = filtered.map(p => {
+    const prods = PROD_PROV.filter(x => x.PROVEEDOR === p.NOMBRE);
+    const inicial = p.NOMBRE.charAt(0).toUpperCase();
+    return `<div class="cli-card" onclick="openProvDetail('${p.NOMBRE.replace(/'/g,"\\'")}')">
+      <div class="cli-avatar">${inicial}</div>
+      <div class="cli-card-info">
+        <div class="cli-card-name">${p.NOMBRE}</div>
+        <div class="cli-card-loc">👤 ${p.CONTACTO_PRINCIPAL || '—'}${p.TEL_PRINCIPAL?' · 📞 '+p.TEL_PRINCIPAL:''}</div>
+      </div>
+      <div class="cli-card-badge">${prods.length} prod.</div>
+    </div>`;
+  }).join('');
+}
+
+document.getElementById('prov-search').addEventListener('input', e => { provQ=e.target.value.trim(); renderProveedores(); });
+
+function openProvDetail(nombre) {
+  const p = PROVEEDORES.find(x => x.NOMBRE === nombre);
+  if (!p) return;
+  currentProv = p;
+
+  document.getElementById('pd-name').textContent = p.NOMBRE;
+  document.getElementById('pd-pago').textContent = p.FORMA_PAGO ? '💳 ' + p.FORMA_PAGO : '';
+
+  const setV = (id, val) => {
+    const el = document.getElementById(id);
+    if (val) { el.textContent = val; el.classList.remove('empty-val'); }
+    else { el.textContent = 'Sin datos'; el.classList.add('empty-val'); }
+  };
+  setV('pd-contacto', p.CONTACTO_PRINCIPAL);
+  setV('pd-tel', p.TEL_PRINCIPAL);
+
+  const altRow = document.getElementById('pd-alt-row');
+  if (p.CONTACTOS_ALT) {
+    const alts = p.CONTACTOS_ALT.split(';').map(s=>s.trim()).filter(Boolean)
+      .map(s => { const [n,t] = s.split('|'); return t ? `${n} (${t})` : n; }).join(' · ');
+    setV('pd-alt', alts);
+    altRow.style.display = 'flex';
+  } else {
+    altRow.style.display = 'none';
+  }
+
+  renderProdProveedor(nombre);
+  document.getElementById('prov-detail').style.display = 'block';
+  document.getElementById('prov-detail').scrollTop = 0;
+}
+
+function renderProdProveedor(nombre) {
+  const prods = PROD_PROV.filter(x => x.PROVEEDOR === nombre);
+  const container = document.getElementById('pd-productos');
+  if (!prods.length) { container.innerHTML = '<p style="color:var(--sub);font-size:0.85rem;padding:8px 0">Sin productos cargados</p>'; return; }
+  container.innerHTML = prods.map((p, i) => {
+    const precio = p.PRECIO_VENTA || p.PRECIO_COMPRA || '';
+    const equipo = p.EQUIPO;
+    const fecha = p.FECHA;
+    return `<div class="prov-prod-card" onclick="openProdEdit(${PROD_PROV.indexOf(p)})">
+      <div class="prov-prod-top">
+        <div class="prov-prod-name">${p.PRODUCTO}</div>
+        ${precio?`<div class="prov-prod-price">${precio}</div>`:''}
+      </div>
+      <div class="prov-prod-meta">
+        ${equipo?`<span class="prov-prod-tag">⚙️ ${equipo}</span>`:''}
+        ${fecha?`<span class="prov-prod-date">📅 ${fecha}</span>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function closeProvDetail() { document.getElementById('prov-detail').style.display='none'; currentProv=null; }
+
+function openProvEdit() {
+  if (!currentProv) return;
+  document.getElementById('pe-contacto').value = currentProv.CONTACTO_PRINCIPAL || '';
+  document.getElementById('pe-tel').value = currentProv.TEL_PRINCIPAL || '';
+  document.getElementById('pe-alt').value = currentProv.CONTACTOS_ALT || '';
+  document.getElementById('pe-pago').value = currentProv.FORMA_PAGO || '';
+  document.getElementById('prov-edit-overlay').classList.add('open');
+}
+function closeProvEdit(e) { if(!e||e.target===document.getElementById('prov-edit-overlay')) document.getElementById('prov-edit-overlay').classList.remove('open'); }
+
+async function submitProvEdit() {
+  if (!currentProv) return;
+  const btn = document.getElementById('pe-btn');
+  btn.disabled=true; btn.textContent='Guardando...';
+  try {
+    const params = new URLSearchParams({
+      key:KEY, action:'updateProveedor', nombre:currentProv.NOMBRE,
+      contacto_principal: document.getElementById('pe-contacto').value.trim(),
+      tel_principal: document.getElementById('pe-tel').value.trim(),
+      contactos_alt: document.getElementById('pe-alt').value.trim(),
+      forma_pago: document.getElementById('pe-pago').value.trim(),
+    });
+    const d = await (await fetch(`${API}?${params}`)).json();
+    if (d.error) throw new Error(d.error);
+    currentProv.CONTACTO_PRINCIPAL = document.getElementById('pe-contacto').value.trim();
+    currentProv.TEL_PRINCIPAL = document.getElementById('pe-tel').value.trim();
+    currentProv.CONTACTOS_ALT = document.getElementById('pe-alt').value.trim();
+    currentProv.FORMA_PAGO = document.getElementById('pe-pago').value.trim();
+    document.getElementById('pe-ok').style.display='block';
+    setTimeout(()=>{ document.getElementById('pe-ok').style.display='none'; document.getElementById('prov-edit-overlay').classList.remove('open'); openProvDetail(currentProv.NOMBRE); },1500);
+  } catch(e) { document.getElementById('pe-err').textContent='Error: '+e.message; document.getElementById('pe-err').style.display='block'; setTimeout(()=>document.getElementById('pe-err').style.display='none',4000); }
+  btn.disabled=false; btn.textContent='Guardar cambios';
+}
+
+function openProdEdit(idx) {
+  prodEditMode = 'edit';
+  currentProdIdx = idx;
+  const p = PROD_PROV[idx];
+  document.getElementById('pp-title').textContent = 'Editar producto';
+  document.getElementById('pp-producto').value = p.PRODUCTO || '';
+  document.getElementById('pp-producto').readOnly = true;
+  document.getElementById('pp-equipo').value = p.EQUIPO || '';
+  document.getElementById('pp-compra').value = p.PRECIO_COMPRA || '';
+  document.getElementById('pp-venta').value = p.PRECIO_VENTA || '';
+  document.getElementById('prov-prod-overlay').classList.add('open');
+}
+
+function openProdAdd() {
+  prodEditMode = 'add';
+  currentProdIdx = null;
+  document.getElementById('pp-title').textContent = 'Agregar producto';
+  document.getElementById('pp-producto').value = '';
+  document.getElementById('pp-producto').readOnly = false;
+  document.getElementById('pp-equipo').value = '';
+  document.getElementById('pp-compra').value = '';
+  document.getElementById('pp-venta').value = '';
+  document.getElementById('prov-prod-overlay').classList.add('open');
+}
+
+function closeProdEdit(e) { if(!e||e.target===document.getElementById('prov-prod-overlay')) document.getElementById('prov-prod-overlay').classList.remove('open'); }
+
+async function submitProdEdit() {
+  if (!currentProv) return;
+  const btn = document.getElementById('pp-btn');
+  btn.disabled=true; btn.textContent='Guardando...';
+  try {
+    const producto = document.getElementById('pp-producto').value.trim();
+    const equipo   = document.getElementById('pp-equipo').value.trim();
+    const compra   = document.getElementById('pp-compra').value.trim();
+    const venta    = document.getElementById('pp-venta').value.trim();
+    if (!producto) { document.getElementById('pp-err').textContent='El nombre es obligatorio'; document.getElementById('pp-err').style.display='block'; btn.disabled=false; btn.textContent='Guardar'; return; }
+
+    let params;
+    if (prodEditMode === 'add') {
+      params = new URLSearchParams({ key:KEY, action:'addProdProveedor', proveedor:currentProv.NOMBRE, producto, equipo, precio_compra:compra, precio_venta:venta });
+    } else {
+      const orig = PROD_PROV[currentProdIdx];
+      params = new URLSearchParams({ key:KEY, action:'updateProdProveedor', proveedor:currentProv.NOMBRE, producto:orig.PRODUCTO, equipo, precio_compra:compra, precio_venta:venta });
+    }
+    const d = await (await fetch(`${API}?${params}`)).json();
+    if (d.error) throw new Error(d.error);
+
+    if (prodEditMode === 'add') {
+      PROD_PROV.push({PROVEEDOR:currentProv.NOMBRE, PRODUCTO:producto, EQUIPO:equipo, PRECIO_COMPRA:compra, PRECIO_VENTA:venta, FECHA:new Date().toLocaleDateString('es-AR')});
+    } else {
+      const orig = PROD_PROV[currentProdIdx];
+      orig.EQUIPO = equipo; orig.PRECIO_COMPRA = compra; orig.PRECIO_VENTA = venta;
+    }
+    document.getElementById('pp-ok').style.display='block';
+    setTimeout(()=>{ document.getElementById('pp-ok').style.display='none'; document.getElementById('prov-prod-overlay').classList.remove('open'); renderProdProveedor(currentProv.NOMBRE); },1200);
+  } catch(e) { document.getElementById('pp-err').textContent='Error: '+e.message; document.getElementById('pp-err').style.display='block'; setTimeout(()=>document.getElementById('pp-err').style.display='none',4000); }
+  btn.disabled=false; btn.textContent='Guardar';
 }
 
 // ── AGREGAR ──
