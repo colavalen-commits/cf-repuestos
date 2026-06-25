@@ -158,6 +158,8 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
 .prov-section-title{font-size:0.78rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;padding:14px 16px 8px}
 .prov-add-btn{display:block;width:calc(100% - 24px);margin:0 12px 8px;padding:11px;background:var(--bg);color:var(--blue);border:2px dashed var(--blue2);border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:inherit;text-align:center}
 .prov-add-btn:active{background:#dce8f5}
+.menu-btn{width:100%;padding:14px 16px;background:var(--bg);border:none;border-radius:12px;font-size:1rem;font-weight:600;text-align:left;cursor:pointer;font-family:inherit;color:var(--text)}
+.menu-btn:active{background:#e0e0e0}
 
 /* PROD EDIT OVERLAY */
 #prov-prod-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end}
@@ -430,8 +432,8 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     <button class="active" onclick="showTab('catalogo')" id="nav-catalogo">
       <span class="nav-icon">📋</span>Catálogo
     </button>
-    <button onclick="showTab('dashboard')" id="nav-dashboard">
-      <span class="nav-icon">📊</span>Dashboard
+    <button onclick="showTab('proveedores')" id="nav-proveedores">
+      <span class="nav-icon">🏭</span>Proveed.
     </button>
     <button onclick="showTab('agregar')" id="nav-agregar">
       <span class="nav-icon">➕</span>Agregar
@@ -439,10 +441,25 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     <button onclick="showTab('clientes')" id="nav-clientes">
       <span class="nav-icon">👥</span>Clientes
     </button>
-    <button onclick="showTab('proveedores')" id="nav-proveedores">
-      <span class="nav-icon">🏭</span>Proveed.
+    <button onclick="openMenu()" id="nav-menu">
+      <span class="nav-icon">☰</span>Menú
     </button>
   </nav>
+</div>
+
+<!-- MENÚ OVERLAY -->
+<div id="menu-overlay" onclick="closeMenu(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:400;align-items:flex-end">
+  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;padding:0 0 env(safe-area-inset-bottom,20px);animation:slideUp 0.25s ease">
+    <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 16px"></div>
+    <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
+      <button onclick="menuGo('catalogo')" class="menu-btn">📋 Catálogo</button>
+      <button onclick="menuGo('proveedores')" class="menu-btn">🏭 Proveedores</button>
+      <button onclick="menuGo('agregar')" class="menu-btn">➕ Agregar</button>
+      <button onclick="menuGo('clientes')" class="menu-btn">👥 Clientes</button>
+      <button onclick="menuGo('dashboard')" class="menu-btn">📊 Dashboard</button>
+    </div>
+  </div>
+</div>
 </div>
 
 <!-- MODAL DETALLE PRODUCTO -->
@@ -491,17 +508,11 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
       <span class="cli-info-val" id="cd-tel-contacto"></span>
     </div>
   </div>
-  <div class="cli-stats-card">
-    <div class="cli-stats-title">Actividad</div>
-    <div class="cli-stats-grid">
-      <div class="cli-stat">
-        <div class="cli-stat-val" id="cd-total"></div>
-        <div class="cli-stat-lbl">Total facturado</div>
-      </div>
-      <div class="cli-stat">
-        <div class="cli-stat-val" id="cd-facturas"></div>
-        <div class="cli-stat-lbl">Facturas emitidas</div>
-      </div>
+  <div class="cli-info-card" style="margin:0 12px 12px">
+    <div class="cli-info-row">
+      <span class="cli-info-icon">🧾</span>
+      <span class="cli-info-label">Facturas</span>
+      <span class="cli-info-val" id="cd-facturas"></span>
     </div>
   </div>
   <button class="cli-edit-btn" onclick="openClientEdit()">✏️ Editar datos</button>
@@ -967,8 +978,7 @@ function openClientDetail(nombre) {
   setVal('cd-tel', c.TEL);
   setVal('cd-contacto', c.CONTACTO);
   setVal('cd-tel-contacto', c.TEL_CONTACTO);
-  document.getElementById('cd-total').textContent = stats ? fmt(stats.bruto) : '—';
-  document.getElementById('cd-facturas').textContent = stats ? stats.facturas : '—';
+  document.getElementById('cd-facturas').textContent = stats ? stats.facturas + ' facturas emitidas' : 'Sin registros';
   document.getElementById('cli-detail').style.display = 'block';
   document.getElementById('cli-detail').scrollTop = 0;
 }
@@ -1289,6 +1299,21 @@ async function submitVenta() {
     recargarCatalogo();
   } catch(e) { showMsg('v-err','Error: '+e.message); }
   btn.disabled=false; btn.textContent='Registrar venta';
+}
+
+function openMenu() {
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  document.getElementById('nav-menu').classList.add('active');
+  const el = document.getElementById('menu-overlay');
+  el.style.display='flex';
+}
+function closeMenu(e) {
+  if (!e || e.target===document.getElementById('menu-overlay'))
+    document.getElementById('menu-overlay').style.display='none';
+}
+function menuGo(tab) {
+  document.getElementById('menu-overlay').style.display='none';
+  showTab(tab);
 }
 
 function showMsg(id, msg) {
