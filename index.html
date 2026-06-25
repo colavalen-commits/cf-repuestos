@@ -6,1321 +6,362 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="theme-color" content="#1F4E79">
-<title>Colfer Repuestos</title>
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<title>CF Repuestos</title>
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --blue:#1F4E79;--blue2:#2e6fad;--red:#C0392B;--green:#1E5C3A;
-  --bg:#f4f6f8;--card:#fff;--text:#1a1a2e;--sub:#666;--border:#e0e0e0;--nota:#fff8e1;
-  --nav-h:62px;
-}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --blue: #1F4E79;
+    --blue-light: #2e6fad;
+    --green: #1E5C3A;
+    --accent: #e8f4fd;
+    --bg: #f4f6f8;
+    --card: #fff;
+    --text: #1a1a2e;
+    --sub: #666;
+    --border: #e0e0e0;
+    --interno: #d6e4f0;
+    --interno-txt: #1F4E79;
+    --covema: #e8f5e9;
+    --covema-txt: #1E5C3A;
+    --original: #fff3e0;
+    --original-txt: #e65100;
+    --nota: #fff8e1;
+  }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg); color: var(--text); min-height: 100vh; }
 
-/* LOGO SVG */
-.colfer-logo-lg{display:block;margin:0 auto 18px;width:220px;height:60px}
-.colfer-logo-sm{display:inline-block;width:110px;height:30px;vertical-align:middle}
+  /* HEADER */
+  header {
+    background: var(--blue);
+    color: #fff;
+    padding: 16px 16px 12px;
+    position: sticky; top: 0; z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  }
+  .header-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  header h1 { font-size: 1.15rem; font-weight: 700; letter-spacing: 0.5px; }
+  .header-count { font-size: 0.75rem; opacity: 0.75; margin-top: 1px; }
+  .logo { font-size: 1.5rem; }
 
-/* LOGIN */
-#login-screen{position:fixed;inset:0;background:var(--blue);display:flex;align-items:center;justify-content:center;z-index:9999;padding:24px}
-.login-box{background:#fff;border-radius:18px;padding:32px 28px;width:100%;max-width:340px;box-shadow:0 8px 32px rgba(0,0,0,0.25)}
-.login-box p{text-align:center;font-size:0.8rem;color:#888;margin-bottom:22px;margin-top:6px}
-.login-box input{width:100%;padding:12px 14px;border:1.5px solid #ddd;border-radius:10px;font-size:1rem;margin-bottom:12px;outline:none;font-family:inherit;transition:border-color 0.2s}
-.login-box input:focus{border-color:var(--blue)}
-.login-box button{width:100%;padding:13px;background:var(--red);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px}
-.login-box button:active{background:#922b21}
-.login-error{color:#d32f2f;font-size:0.82rem;text-align:center;margin-top:10px;display:none}
+  /* SEARCH */
+  .search-wrap { position: relative; }
+  .search-wrap input {
+    width: 100%; padding: 10px 14px 10px 38px;
+    border: none; border-radius: 10px;
+    font-size: 1rem; background: rgba(255,255,255,0.18); color: #fff;
+    outline: none;
+  }
+  .search-wrap input::placeholder { color: rgba(255,255,255,0.6); }
+  .search-wrap input:focus { background: rgba(255,255,255,0.25); }
+  .search-icon { position: absolute; left: 11px; top: 50%; transform: translateY(-50%);
+    font-size: 1rem; opacity: 0.7; }
 
-/* LAYOUT */
-#app{display:none;flex-direction:column;min-height:100vh}
-.tab-content{display:none;flex:1;overflow-y:auto;padding-bottom:calc(var(--nav-h) + 10px)}
-.tab-content.active{display:block}
+  /* FILTERS */
+  .filters {
+    display: flex; gap: 8px; padding: 10px 12px 6px;
+    overflow-x: auto; -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .filters::-webkit-scrollbar { display: none; }
+  .chip {
+    flex-shrink: 0; padding: 5px 13px; border-radius: 20px;
+    font-size: 0.8rem; font-weight: 500; border: 1.5px solid var(--border);
+    background: var(--card); cursor: pointer; transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .chip.active { background: var(--blue); color: #fff; border-color: var(--blue); }
 
-/* BOTTOM NAV */
-nav{position:fixed;bottom:0;left:0;right:0;height:var(--nav-h);background:#fff;border-top:1px solid var(--border);display:flex;z-index:100;padding-bottom:env(safe-area-inset-bottom,0)}
-nav button{flex:1;border:none;background:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:0.62rem;color:var(--sub);cursor:pointer;transition:color 0.15s;padding:8px 0}
-nav button .nav-icon{font-size:1.35rem;line-height:1}
-nav button.active{color:var(--blue)}
-nav button.active .nav-icon{transform:scale(1.1)}
+  /* SORT BAR */
+  .sort-bar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 6px 14px 4px; font-size: 0.78rem; color: var(--sub);
+  }
+  .sort-btn { display: flex; gap: 6px; }
+  .sort-btn button {
+    border: none; background: none; font-size: 0.78rem; color: var(--sub);
+    cursor: pointer; padding: 2px 6px; border-radius: 4px;
+  }
+  .sort-btn button.active { color: var(--blue); font-weight: 600; background: var(--accent); }
 
-/* HEADER */
-header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,0.2)}
-.header-top{display:flex;align-items:center;gap:10px;margin-bottom:10px}
-.header-sub{font-size:0.72rem;opacity:0.7;margin-top:1px}
-.search-wrap{position:relative}
-.search-wrap input{width:100%;padding:10px 14px 10px 38px;border:none;border-radius:10px;font-size:1rem;background:rgba(255,255,255,0.18);color:#fff;outline:none}
-.search-wrap input::placeholder{color:rgba(255,255,255,0.6)}
-.search-wrap input:focus{background:rgba(255,255,255,0.25)}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);opacity:0.7}
+  /* CARDS */
+  .list { padding: 6px 10px 80px; display: flex; flex-direction: column; gap: 8px; }
 
-/* FILTROS */
-.filters{display:flex;gap:8px;padding:10px 12px 6px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
-.filters::-webkit-scrollbar{display:none}
-.chip{flex-shrink:0;padding:5px 13px;border-radius:20px;font-size:0.8rem;font-weight:500;border:1.5px solid var(--border);background:var(--card);cursor:pointer;transition:all 0.15s;white-space:nowrap}
-.chip.active{background:var(--blue);color:#fff;border-color:var(--blue)}
-.sort-bar{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 4px;font-size:0.78rem;color:var(--sub)}
-.sort-btn button{border:none;background:none;font-size:0.78rem;color:var(--sub);cursor:pointer;padding:2px 6px;border-radius:4px}
-.sort-btn button.active{color:var(--blue);font-weight:600;background:#e8f4fd}
+  .card {
+    background: var(--card); border-radius: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    overflow: hidden; cursor: pointer; transition: transform 0.1s, box-shadow 0.1s;
+  }
+  .card:active { transform: scale(0.98); }
 
-/* CARDS */
-.list{padding:6px 10px;display:flex;flex-direction:column;gap:8px}
-.card{background:var(--card);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;cursor:pointer;transition:transform 0.1s}
-.card:active{transform:scale(0.98)}
-.card-main{padding:12px 14px 10px}
-.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px}
-.card-name{font-size:0.95rem;font-weight:600;line-height:1.3;flex:1}
-.card-price{font-size:1rem;font-weight:700;color:var(--blue);white-space:nowrap}
-.card-price .cur{font-size:0.72rem;font-weight:500;opacity:0.7}
-.card-meta{display:flex;gap:6px;margin-top:7px;flex-wrap:wrap;align-items:center}
-.badge{font-size:0.7rem;padding:3px 9px;border-radius:10px;font-weight:600;white-space:nowrap}
-.badge-cli{background:#d4edda;color:#155724}
-.badge-prov{background:#cce5ff;color:#004085}
-.card-nota{background:var(--nota);padding:7px 14px;font-size:0.75rem;color:#7a6000;border-top:1px solid #ffe082;line-height:1.4}
-.empty{text-align:center;padding:60px 20px;color:var(--sub)}
-.empty .emoji{font-size:2.5rem;margin-bottom:12px}
+  .card-main { padding: 12px 14px 10px; }
+  .card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .card-name { font-size: 0.95rem; font-weight: 600; line-height: 1.3; flex: 1; }
+  .card-price { font-size: 1rem; font-weight: 700; color: var(--blue); white-space: nowrap; }
+  .card-price .currency { font-size: 0.72rem; font-weight: 500; opacity: 0.7; }
 
-/* LOADING */
-.loading{text-align:center;padding:60px 20px;color:var(--sub)}
-.spinner{width:36px;height:36px;border:3px solid #e0e0e0;border-top-color:var(--blue);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 14px}
-@keyframes spin{to{transform:rotate(360deg)}}
+  .card-meta { display: flex; gap: 6px; margin-top: 7px; flex-wrap: wrap; align-items: center; }
+  .badge {
+    font-size: 0.7rem; padding: 2px 8px; border-radius: 10px; font-weight: 600;
+  }
+  .badge-interno { background: var(--interno); color: var(--interno-txt); }
+  .badge-sin_codigo, .badge-covema-badge { background: var(--covema); color: var(--covema-txt); }
+  .badge-original { background: var(--original); color: var(--original-txt); }
+  .badge-proveedor { background: #f0f0f0; color: #555; font-weight: 400; }
 
-/* MODAL */
-.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;align-items:flex-end;justify-content:center}
-.overlay.open{display:flex}
-.modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-height:85vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,16px);animation:slideUp 0.25s ease}
-@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.modal-handle{width:40px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 0}
-.modal-header{padding:14px 18px 10px;border-bottom:1px solid var(--border)}
-.modal-title{font-size:1.05rem;font-weight:700;line-height:1.3}
-.modal-badges{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
-.modal-body{padding:16px 18px}
-.detail-row{display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #f0f0f0;font-size:0.88rem}
-.detail-row:last-child{border-bottom:none}
-.detail-label{color:var(--sub)}
-.detail-value{font-weight:600;text-align:right;max-width:60%}
-.detail-value.hl{color:var(--blue);font-size:1.05rem}
-.detail-value.gn{color:var(--green)}
-.modal-nota{background:var(--nota);border-radius:8px;padding:10px 12px;font-size:0.8rem;color:#7a6000;margin-top:14px;line-height:1.5}
-.modal-nota strong{display:block;margin-bottom:4px}
+  .card-code { font-size: 0.75rem; color: var(--sub); font-family: monospace; }
 
-/* DASHBOARD */
-.page-header{background:var(--blue);color:#fff;padding:16px 16px 14px}
-.page-header-top{display:flex;align-items:center;gap:10px}
-.page-header h1{font-size:1.05rem;font-weight:700;margin-bottom:2px}
-.page-header p{font-size:0.72rem;opacity:0.7}
-.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 12px 0}
-.kpi{background:var(--card);border-radius:14px;padding:14px 16px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.kpi-label{font-size:0.72rem;color:var(--sub);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.3px}
-.kpi-value{font-size:1.15rem;font-weight:700;color:var(--blue);line-height:1.2}
-.kpi-value.green{color:var(--green)}
-.kpi-sub{font-size:0.7rem;color:var(--sub);margin-top:2px}
-.chart-section{margin:14px 12px 0;background:var(--card);border-radius:14px;padding:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
-.chart-title{font-size:0.85rem;font-weight:700;color:var(--text);margin-bottom:12px}
-.chart-wrap-tall{position:relative;height:260px}
+  .card-nota {
+    background: var(--nota); padding: 7px 14px;
+    font-size: 0.75rem; color: #7a6000; border-top: 1px solid #ffe082;
+    line-height: 1.4;
+  }
+  .card-nota::before { content: "⚠️ "; }
 
-/* AGREGAR */
-.add-header{background:var(--green);color:#fff;padding:16px 16px 14px}
-.add-header-top{display:flex;align-items:center;gap:10px}
-.add-header h1{font-size:1.05rem;font-weight:700;margin-bottom:2px}
-.add-header p{font-size:0.72rem;opacity:0.75}
-.add-tabs{display:flex;margin:14px 12px 0;border-radius:12px;overflow:hidden;border:1.5px solid var(--border);background:var(--card)}
-.add-tab{flex:1;padding:10px;text-align:center;font-size:0.85rem;font-weight:600;cursor:pointer;color:var(--sub);border:none;background:none}
-.add-tab.active{background:var(--green);color:#fff}
-.form-wrap{padding:14px 12px}
-.form-group{margin-bottom:14px}
-.form-group label{display:block;font-size:0.78rem;font-weight:600;color:var(--sub);margin-bottom:5px;text-transform:uppercase;letter-spacing:0.3px}
-.form-group input,.form-group select{width:100%;padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit;outline:none;background:#fff;color:var(--text);transition:border-color 0.2s}
-.form-group input:focus,.form-group select:focus{border-color:var(--green)}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.btn-submit{width:100%;padding:14px;background:var(--green);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px}
-.btn-submit:active{background:#155027}
-.btn-submit:disabled{background:#aaa;cursor:not-allowed}
-.form-success{background:#d4edda;color:#155724;border-radius:10px;padding:12px 16px;font-size:0.88rem;margin-top:12px;display:none;text-align:center}
-.form-error{background:#f8d7da;color:#721c24;border-radius:10px;padding:12px 16px;font-size:0.88rem;margin-top:12px;display:none;text-align:center}
-.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0}
-.toggle-row label{font-size:0.9rem;font-weight:500}
-.toggle{position:relative;width:46px;height:26px}
-.toggle input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:13px;transition:0.2s;cursor:pointer}
-.toggle-slider:before{content:'';position:absolute;height:20px;width:20px;left:3px;bottom:3px;background:white;border-radius:50%;transition:0.2s}
-.toggle input:checked + .toggle-slider{background:var(--green)}
-.toggle input:checked + .toggle-slider:before{transform:translateX(20px)}
+  /* DETAIL MODAL */
+  .overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    z-index: 200; align-items: flex-end; justify-content: center;
+  }
+  .overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border-radius: 20px 20px 0 0;
+    width: 100%; max-height: 85vh; overflow-y: auto;
+    padding: 0 0 env(safe-area-inset-bottom, 16px);
+    animation: slideUp 0.25s ease;
+  }
+  @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
 
-/* PROVEEDORES */
-.prov-prod-card{background:var(--bg);border-radius:10px;padding:11px 14px;margin-bottom:8px;cursor:pointer;transition:transform 0.1s}
-.prov-prod-card:active{transform:scale(0.98)}
-.prov-prod-top{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
-.prov-prod-name{font-size:0.88rem;font-weight:600;line-height:1.3;flex:1}
-.prov-prod-price{font-size:0.95rem;font-weight:700;color:var(--blue);white-space:nowrap}
-.prov-prod-meta{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap}
-.prov-prod-tag{font-size:0.68rem;padding:2px 8px;border-radius:8px;font-weight:600;background:#e8f4fd;color:var(--blue)}
-.prov-prod-date{font-size:0.68rem;color:var(--sub)}
-.prov-section-title{font-size:0.78rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;padding:14px 16px 8px}
-.prov-add-btn{display:block;width:calc(100% - 24px);margin:0 12px 8px;padding:11px;background:var(--bg);color:var(--blue);border:2px dashed var(--blue2);border-radius:10px;font-size:0.88rem;font-weight:700;cursor:pointer;font-family:inherit;text-align:center}
-.prov-add-btn:active{background:#dce8f5}
-.menu-btn{width:100%;padding:14px 16px;background:var(--bg);border:none;border-radius:12px;font-size:1rem;font-weight:600;text-align:left;cursor:pointer;font-family:inherit;color:var(--text)}
-.menu-btn:active{background:#e0e0e0}
+  .modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 12px auto 0; }
+  .modal-header { padding: 14px 18px 10px; border-bottom: 1px solid var(--border); }
+  .modal-title { font-size: 1.05rem; font-weight: 700; line-height: 1.3; }
+  .modal-badges { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
 
-/* PROD EDIT OVERLAY */
-#prov-prod-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end}
-#prov-prod-overlay.open{display:flex}
-.prov-prod-modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom,20px);animation:slideUp 0.25s ease}
+  .modal-body { padding: 16px 18px; }
+  .detail-row { display: flex; justify-content: space-between; padding: 9px 0;
+    border-bottom: 1px solid #f0f0f0; font-size: 0.88rem; }
+  .detail-row:last-child { border-bottom: none; }
+  .detail-label { color: var(--sub); }
+  .detail-value { font-weight: 600; text-align: right; max-width: 60%; }
+  .detail-value.highlight { color: var(--blue); font-size: 1.05rem; }
+  .detail-value.green { color: #1E5C3A; }
 
-/* CLIENTES */
-.cli-search-wrap{position:relative;margin-top:10px}
-.cli-search-wrap input{width:100%;padding:10px 14px 10px 38px;border:none;border-radius:10px;font-size:1rem;background:rgba(255,255,255,0.18);color:#fff;outline:none}
-.cli-search-wrap input::placeholder{color:rgba(255,255,255,0.6)}
-.cli-search-wrap input:focus{background:rgba(255,255,255,0.25)}
-.cli-card{background:var(--card);border-radius:12px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:14px 16px;cursor:pointer;transition:transform 0.1s;display:flex;align-items:center;gap:12px}
-.cli-card:active{transform:scale(0.98)}
-.cli-avatar{width:42px;height:42px;border-radius:50%;background:#dce8f5;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--blue);flex-shrink:0}
-.cli-card-info{flex:1;min-width:0}
-.cli-card-name{font-size:0.92rem;font-weight:700;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.cli-card-loc{font-size:0.75rem;color:var(--sub);margin-top:2px}
-.cli-card-badge{font-size:0.72rem;font-weight:700;color:var(--blue);background:#dce8f5;border-radius:8px;padding:3px 8px;white-space:nowrap;flex-shrink:0}
+  .modal-nota { background: var(--nota); border-radius: 8px; padding: 10px 12px;
+    font-size: 0.8rem; color: #7a6000; margin-top: 14px; line-height: 1.5; }
+  .modal-nota strong { display: block; margin-bottom: 4px; }
 
-/* DETALLE CLIENTE */
-#cli-detail,#prov-detail{display:none;position:fixed;inset:0;background:var(--bg);z-index:150;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,20px)}
-.cli-detail-header{background:var(--blue);color:#fff;padding:16px}
-.cli-back-btn{background:none;border:none;color:#fff;font-size:1rem;cursor:pointer;display:flex;align-items:center;gap:6px;margin-bottom:12px;padding:0;font-family:inherit;opacity:0.9}
-.cli-detail-name{font-size:1.1rem;font-weight:700;line-height:1.3}
-.cli-detail-cuit{font-size:0.78rem;opacity:0.75;margin-top:3px}
-.cli-info-card{background:var(--card);margin:12px;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:4px 0}
-.cli-info-row{display:flex;align-items:center;gap:10px;padding:11px 16px;border-bottom:1px solid #f0f0f0;font-size:0.87rem}
-.cli-info-row:last-child{border-bottom:none}
-.cli-info-icon{font-size:1rem;width:22px;text-align:center;flex-shrink:0}
-.cli-info-label{color:var(--sub);font-size:0.75rem;min-width:70px}
-.cli-info-val{font-weight:600;flex:1}
-.cli-info-val.empty-val{color:#bbb;font-weight:400;font-style:italic}
-.cli-stats-card{background:var(--card);margin:0 12px 12px;border-radius:14px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:14px 16px}
-.cli-stats-title{font-size:0.8rem;font-weight:700;color:var(--sub);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:12px}
-.cli-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.cli-stat{text-align:center;padding:12px 8px;background:var(--bg);border-radius:10px}
-.cli-stat-val{font-size:1.05rem;font-weight:700;color:var(--blue)}
-.cli-stat-lbl{font-size:0.7rem;color:var(--sub);margin-top:3px}
-.cli-edit-btn{display:block;width:calc(100% - 24px);margin:0 12px 12px;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;text-align:center}
-.cli-edit-btn:active{background:#163a5c}
-
-/* EDIT OVERLAY */
-#cli-edit-overlay,#prov-edit-overlay,#prov-prod-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:300;align-items:flex-end}
-#cli-edit-overlay.open,#prov-edit-overlay.open,#prov-prod-overlay.open{display:flex}
-.cli-edit-modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-height:88vh;overflow-y:auto;padding:0 0 env(safe-area-inset-bottom,20px);animation:slideUp 0.25s ease}
-.cli-edit-modal-header{padding:16px 18px 14px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.cli-edit-modal-header h3{font-size:1rem;font-weight:700}
-.cli-edit-close{background:none;border:none;font-size:1.4rem;color:var(--sub);cursor:pointer;line-height:1}
-.cli-edit-form{padding:16px 18px}
-.cli-edit-form .form-group input:focus{border-color:var(--blue)}
-.btn-cli-save{width:100%;padding:14px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:6px}
-.btn-cli-save:disabled{background:#aaa}
+  /* EMPTY STATE */
+  .empty { text-align: center; padding: 60px 20px; color: var(--sub); }
+  .empty .emoji { font-size: 2.5rem; margin-bottom: 12px; }
+  .empty p { font-size: 0.9rem; }
 </style>
 </head>
 <body>
 
-<!-- LOGIN -->
-<div id="login-screen">
-  <div class="login-box">
-    <!-- Logo Colfer SVG -->
-    <svg class="colfer-logo-lg" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
-      <!-- Rombo SC -->
-      <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="#ccc" stroke-width="1.5"/>
-      <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
-      <!-- Barra roja COLFER -->
-      <rect x="50" y="8" width="168" height="44" rx="3" fill="#C0392B"/>
-      <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
-      <text x="206" y="52" text-anchor="end" font-family="Arial,sans-serif" font-weight="700" font-size="10" fill="white" opacity="0.85">S.R.L.</text>
-    </svg>
-    <p>Ingresá tus credenciales para continuar</p>
-    <input type="text" id="lu" placeholder="Usuario" autocomplete="username" autocorrect="off" autocapitalize="off">
-    <input type="password" id="lp" placeholder="Contraseña" autocomplete="current-password">
-    <button onclick="doLogin()">Ingresar</button>
-    <div class="login-error" id="lerr">Usuario o contraseña incorrectos</div>
+<header>
+  <div class="header-top">
+    <div class="logo">🔩</div>
+    <div>
+      <h1>CF Repuestos</h1>
+      <div class="header-count" id="header-count">293 productos</div>
+    </div>
+  </div>
+  <div class="search-wrap">
+    <span class="search-icon">🔍</span>
+    <input type="search" id="search" placeholder="Buscar producto, código, proveedor..." autocomplete="off" autocorrect="off" spellcheck="false">
+  </div>
+</header>
+
+<div class="filters" id="filters">
+  <div class="chip active" data-filter="all">Todos</div>
+  <div class="chip" data-filter="INTERNO">Cód. Interno</div>
+  <div class="chip" data-filter="ORIGINAL">Cód. Original</div>
+  <div class="chip" data-filter="SIN_CODIGO">Sin código</div>
+  <div class="chip" data-filter="COVEMA">COVEMA</div>
+</div>
+
+<div class="sort-bar">
+  <span id="result-count">293 resultados</span>
+  <div class="sort-btn">
+    <button onclick="setSort('name')" id="sort-name" class="active">A-Z</button>
+    <button onclick="setSort('price')" id="sort-price">Precio</button>
+    <button onclick="setSort('date')" id="sort-date">Reciente</button>
   </div>
 </div>
 
-<div id="app">
-  <!-- TAB: CATÁLOGO -->
-  <div class="tab-content active" id="tab-catalogo">
-    <header>
-      <div class="header-top">
-        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
-          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
-          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
-        </svg>
-        <div style="flex:1">
-          <div style="font-size:0.75rem;opacity:0.75;font-weight:600">REPUESTOS</div>
-          <div class="header-sub" id="hcount">Cargando...</div>
-        </div>
-        <button onclick="recargarCatalogo()" style="background:rgba(255,255,255,0.2);border:none;color:#fff;border-radius:8px;padding:6px 10px;cursor:pointer;font-size:0.8rem">↻ Sync</button>
-      </div>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="search" id="search" placeholder="Buscar producto, código, proveedor..." autocomplete="off" autocorrect="off" spellcheck="false">
-      </div>
-    </header>
-    <div class="filters">
-      <div class="chip active" data-filter="all">Todos</div>
-      <div class="chip" data-filter="INTERNO">Cód. Interno</div>
-      <div class="chip" data-filter="ORIGINAL">Cód. Original</div>
-      <div class="chip" data-filter="SIN_CODIGO">Sin código</div>
-      <div class="chip" data-filter="COVEMA">COVEMA</div>
-    </div>
-    <div class="sort-bar">
-      <span id="rcount"></span>
-      <div class="sort-btn">
-        <button onclick="setSort('name')" id="sort-name" class="active">A-Z</button>
-        <button onclick="setSort('price')" id="sort-price">Precio</button>
-        <button onclick="setSort('date')" id="sort-date">Reciente</button>
-      </div>
-    </div>
-    <div class="list" id="list"></div>
-  </div>
+<div class="list" id="list"></div>
 
-  <!-- TAB: DASHBOARD -->
-  <div class="tab-content" id="tab-dashboard">
-    <div class="page-header">
-      <div class="page-header-top">
-        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
-          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
-          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
-        </svg>
-        <div>
-          <h1>Dashboard</h1>
-          <p>Resumen de facturación</p>
-        </div>
-      </div>
-    </div>
-    <div id="dash-content">
-      <div class="loading"><div class="spinner"></div><p>Cargando datos...</p></div>
-    </div>
-  </div>
-
-  <!-- TAB: AGREGAR -->
-  <div class="tab-content" id="tab-agregar">
-    <div class="add-header">
-      <div class="add-header-top">
-        <span style="font-size:1.5rem">➕</span>
-        <div>
-          <h1>Agregar</h1>
-          <p>Cargá un producto nuevo o registrá una venta</p>
-        </div>
-      </div>
-    </div>
-    <div class="add-tabs">
-      <button class="add-tab active" onclick="switchAddTab('producto')">Producto nuevo</button>
-      <button class="add-tab" onclick="switchAddTab('venta')">Registrar venta</button>
-    </div>
-    <div class="form-wrap" id="form-producto">
-      <div class="form-group">
-        <label>Nombre del artículo *</label>
-        <input type="text" id="p-articulo" placeholder="Ej: FILTRO DE ACEITE">
-      </div>
-      <div class="form-group">
-        <label>Proveedor *</label>
-        <input type="text" id="p-proveedor" list="prov-list" placeholder="Buscar o escribir proveedor">
-        <datalist id="prov-list"></datalist>
-      </div>
-      <div class="toggle-row">
-        <label>¿Generar código interno (CF-)?</label>
-        <label class="toggle"><input type="checkbox" id="p-interno" checked onchange="toggleCodigo()"><span class="toggle-slider"></span></label>
-      </div>
-      <div class="form-group" id="codigo-manual-wrap" style="display:none">
-        <label>Código (si ya tiene uno)</label>
-        <input type="text" id="p-codigo" placeholder="Ej: 2104522">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Moneda</label>
-          <select id="p-moneda"><option>USD</option><option>ARS</option></select>
-        </div>
-        <div class="form-group">
-          <label>Precio de venta *</label>
-          <input type="number" id="p-precio" placeholder="0">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Costo (opcional)</label>
-        <input type="number" id="p-costo" placeholder="0">
-      </div>
-      <div class="form-group">
-        <label>Cliente (opcional)</label>
-        <input type="text" id="p-cliente" list="cli-list" placeholder="Buscar cliente">
-        <datalist id="cli-list"></datalist>
-      </div>
-      <button class="btn-submit" onclick="submitProducto()">Guardar producto</button>
-      <div class="form-success" id="p-ok">✅ Producto guardado correctamente</div>
-      <div class="form-error" id="p-err"></div>
-    </div>
-    <div class="form-wrap" id="form-venta" style="display:none">
-      <div class="form-group">
-        <label>Artículo *</label>
-        <input type="text" id="v-articulo" list="art-list" placeholder="Buscar artículo del catálogo">
-        <datalist id="art-list"></datalist>
-      </div>
-      <div class="form-group">
-        <label>Cliente *</label>
-        <input type="text" id="v-cliente" list="cli-list2" placeholder="Buscar cliente">
-        <datalist id="cli-list2"></datalist>
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Moneda</label>
-          <select id="v-moneda"><option>USD</option><option>ARS</option></select>
-        </div>
-        <div class="form-group">
-          <label>Precio cobrado *</label>
-          <input type="number" id="v-precio" placeholder="0">
-        </div>
-      </div>
-      <button class="btn-submit" onclick="submitVenta()">Registrar venta</button>
-      <div class="form-success" id="v-ok">✅ Venta registrada correctamente</div>
-      <div class="form-error" id="v-err"></div>
-    </div>
-  </div>
-
-  <!-- TAB: CLIENTES -->
-  <div class="tab-content" id="tab-clientes">
-    <header>
-      <div class="header-top">
-        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
-          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
-          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
-        </svg>
-        <div style="flex:1">
-          <div style="font-size:0.75rem;opacity:0.75;font-weight:600">CLIENTES</div>
-          <div class="header-sub" id="cli-hcount">Cargando...</div>
-        </div>
-      </div>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="search" id="cli-search" placeholder="Buscar cliente..." autocomplete="off" autocorrect="off" spellcheck="false">
-      </div>
-    </header>
-    <div class="list" id="cli-list-container" style="padding-top:10px"></div>
-  </div>
-
-  <!-- TAB: PROVEEDORES -->
-  <div class="tab-content" id="tab-proveedores">
-    <header>
-      <div class="header-top">
-        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
-          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
-          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
-          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
-          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
-        </svg>
-        <div style="flex:1">
-          <div style="font-size:0.75rem;opacity:0.75;font-weight:600">PROVEEDORES</div>
-          <div class="header-sub" id="prov-hcount">Cargando...</div>
-        </div>
-      </div>
-      <div class="search-wrap">
-        <span class="search-icon">🔍</span>
-        <input type="search" id="prov-search" placeholder="Buscar proveedor o producto..." autocomplete="off" autocorrect="off" spellcheck="false">
-      </div>
-    </header>
-    <div class="list" id="prov-list-container" style="padding-top:10px"></div>
-  </div>
-
-  <!-- BOTTOM NAV -->
-  <nav>
-    <button class="active" onclick="showTab('catalogo')" id="nav-catalogo">
-      <span class="nav-icon">📋</span>Catálogo
-    </button>
-    <button onclick="showTab('proveedores')" id="nav-proveedores">
-      <span class="nav-icon">🏭</span>Proveed.
-    </button>
-    <button onclick="showTab('agregar')" id="nav-agregar">
-      <span class="nav-icon">➕</span>Agregar
-    </button>
-    <button onclick="showTab('clientes')" id="nav-clientes">
-      <span class="nav-icon">👥</span>Clientes
-    </button>
-    <button onclick="openMenu()" id="nav-menu">
-      <span class="nav-icon">☰</span>Menú
-    </button>
-  </nav>
-</div>
-
-<!-- MENÚ OVERLAY -->
-<div id="menu-overlay" onclick="closeMenu(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:400;align-items:flex-end">
-  <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;padding:0 0 env(safe-area-inset-bottom,20px);animation:slideUp 0.25s ease">
-    <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 16px"></div>
-    <div style="padding:0 16px 16px;display:flex;flex-direction:column;gap:10px">
-      <button onclick="menuGo('catalogo')" class="menu-btn">📋 Catálogo</button>
-      <button onclick="menuGo('proveedores')" class="menu-btn">🏭 Proveedores</button>
-      <button onclick="menuGo('agregar')" class="menu-btn">➕ Agregar</button>
-      <button onclick="menuGo('clientes')" class="menu-btn">👥 Clientes</button>
-      <button onclick="menuGo('dashboard')" class="menu-btn">📊 Dashboard</button>
-    </div>
-  </div>
-</div>
-</div>
-
-<!-- MODAL DETALLE PRODUCTO -->
+<!-- DETAIL MODAL -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal" id="modal">
     <div class="modal-handle"></div>
     <div class="modal-header">
-      <div class="modal-title" id="mtitle"></div>
-      <div class="modal-badges" id="mbadges"></div>
+      <div class="modal-title" id="modal-title"></div>
+      <div class="modal-badges" id="modal-badges"></div>
     </div>
-    <div class="modal-body" id="mbody"></div>
-  </div>
-</div>
-
-<!-- DETALLE CLIENTE -->
-<div id="cli-detail">
-  <div class="cli-detail-header">
-    <button class="cli-back-btn" onclick="closeClientDetail()">← Volver</button>
-    <div class="cli-detail-name" id="cd-name"></div>
-    <div class="cli-detail-cuit" id="cd-cuit"></div>
-  </div>
-  <div class="cli-info-card">
-    <div class="cli-info-row">
-      <span class="cli-info-icon">📍</span>
-      <span class="cli-info-label">Dirección</span>
-      <span class="cli-info-val" id="cd-dir"></span>
-    </div>
-    <div class="cli-info-row">
-      <span class="cli-info-icon">🏙️</span>
-      <span class="cli-info-label">Localidad</span>
-      <span class="cli-info-val" id="cd-loc"></span>
-    </div>
-    <div class="cli-info-row">
-      <span class="cli-info-icon">📞</span>
-      <span class="cli-info-label">Teléfono</span>
-      <span class="cli-info-val" id="cd-tel"></span>
-    </div>
-    <div class="cli-info-row">
-      <span class="cli-info-icon">👤</span>
-      <span class="cli-info-label">Contacto</span>
-      <span class="cli-info-val" id="cd-contacto"></span>
-    </div>
-    <div class="cli-info-row">
-      <span class="cli-info-icon">📱</span>
-      <span class="cli-info-label">Tel. contacto</span>
-      <span class="cli-info-val" id="cd-tel-contacto"></span>
-    </div>
-  </div>
-  <div class="cli-info-card" style="margin:0 12px 12px">
-    <div class="cli-info-row">
-      <span class="cli-info-icon">🧾</span>
-      <span class="cli-info-label">Facturas</span>
-      <span class="cli-info-val" id="cd-facturas"></span>
-    </div>
-  </div>
-  <button class="cli-edit-btn" onclick="openClientEdit()">✏️ Editar datos</button>
-</div>
-
-<!-- DETALLE PROVEEDOR -->
-<div id="prov-detail">
-  <div class="cli-detail-header">
-    <button class="cli-back-btn" onclick="closeProvDetail()">← Volver</button>
-    <div class="cli-detail-name" id="pd-name"></div>
-    <div class="cli-detail-cuit" id="pd-pago"></div>
-  </div>
-  <div class="cli-info-card">
-    <div class="cli-info-row">
-      <span class="cli-info-icon">👤</span>
-      <span class="cli-info-label">Principal</span>
-      <span class="cli-info-val" id="pd-contacto"></span>
-    </div>
-    <div class="cli-info-row">
-      <span class="cli-info-icon">📞</span>
-      <span class="cli-info-label">Teléfono</span>
-      <span class="cli-info-val" id="pd-tel"></span>
-    </div>
-    <div class="cli-info-row" id="pd-alt-row">
-      <span class="cli-info-icon">👥</span>
-      <span class="cli-info-label">Alternativos</span>
-      <span class="cli-info-val" id="pd-alt"></span>
-    </div>
-  </div>
-  <button class="cli-edit-btn" onclick="openProvEdit()">✏️ Editar contactos</button>
-  <div class="prov-section-title">Catálogo de productos</div>
-  <div style="padding:0 12px 12px">
-    <div id="pd-productos"></div>
-    <button class="prov-add-btn" onclick="openProdAdd()">+ Agregar producto</button>
-  </div>
-</div>
-
-<!-- EDIT OVERLAY PROVEEDOR (contactos) -->
-<div id="prov-edit-overlay" onclick="closeProvEdit(event)">
-  <div class="cli-edit-modal">
-    <div class="modal-handle"></div>
-    <div class="cli-edit-modal-header">
-      <h3>Editar contactos</h3>
-      <button class="cli-edit-close" onclick="document.getElementById('prov-edit-overlay').classList.remove('open')">×</button>
-    </div>
-    <div class="cli-edit-form">
-      <div class="form-group">
-        <label>Contacto principal</label>
-        <input type="text" id="pe-contacto" placeholder="Nombre">
-      </div>
-      <div class="form-group">
-        <label>Teléfono principal</label>
-        <input type="tel" id="pe-tel" placeholder="11 1234-5678">
-      </div>
-      <div class="form-group">
-        <label>Contactos alternativos</label>
-        <input type="text" id="pe-alt" placeholder="Nombre|tel; Nombre2|tel2">
-      </div>
-      <div class="form-group">
-        <label>Forma de pago</label>
-        <input type="text" id="pe-pago" placeholder="Ej: Cta. Corriente 30 días">
-      </div>
-      <button class="btn-cli-save" id="pe-btn" onclick="submitProvEdit()">Guardar cambios</button>
-      <div class="form-success" id="pe-ok">✅ Datos actualizados</div>
-      <div class="form-error" id="pe-err"></div>
-    </div>
-  </div>
-</div>
-
-<!-- EDIT/ADD OVERLAY PRODUCTO PROVEEDOR -->
-<div id="prov-prod-overlay" onclick="closeProdEdit(event)">
-  <div class="prov-prod-modal">
-    <div class="modal-handle"></div>
-    <div class="cli-edit-modal-header">
-      <h3 id="pp-title">Editar producto</h3>
-      <button class="cli-edit-close" onclick="document.getElementById('prov-prod-overlay').classList.remove('open')">×</button>
-    </div>
-    <div class="cli-edit-form">
-      <div class="form-group">
-        <label>Producto *</label>
-        <input type="text" id="pp-producto" placeholder="Nombre del producto">
-      </div>
-      <div class="form-group">
-        <label>Equipo / Marca</label>
-        <input type="text" id="pp-equipo" placeholder="Ej: WIRTGEN, HAMM...">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Precio compra</label>
-          <input type="text" id="pp-compra" placeholder="$ 0,00">
-        </div>
-        <div class="form-group">
-          <label>Precio venta</label>
-          <input type="text" id="pp-venta" placeholder="$ 0,00">
-        </div>
-      </div>
-      <button class="btn-cli-save" id="pp-btn" onclick="submitProdEdit()">Guardar</button>
-      <div class="form-success" id="pp-ok">✅ Guardado</div>
-      <div class="form-error" id="pp-err"></div>
-    </div>
-  </div>
-</div>
-
-<!-- EDIT OVERLAY CLIENTE -->
-<div id="cli-edit-overlay" onclick="closeClientEdit(event)">
-  <div class="cli-edit-modal">
-    <div class="modal-handle"></div>
-    <div class="cli-edit-modal-header">
-      <h3>Editar cliente</h3>
-      <button class="cli-edit-close" onclick="document.getElementById('cli-edit-overlay').classList.remove('open')">×</button>
-    </div>
-    <div class="cli-edit-form">
-      <div class="form-group">
-        <label>CUIT</label>
-        <input type="text" id="e-cuit" placeholder="30-12345678-9">
-      </div>
-      <div class="form-group">
-        <label>Dirección</label>
-        <input type="text" id="e-dir" placeholder="Calle 123">
-      </div>
-      <div class="form-row">
-        <div class="form-group">
-          <label>Localidad</label>
-          <input type="text" id="e-loc" placeholder="Rosario">
-        </div>
-        <div class="form-group">
-          <label>Provincia</label>
-          <input type="text" id="e-prov" placeholder="Santa Fe">
-        </div>
-      </div>
-      <div class="form-group">
-        <label>Teléfono</label>
-        <input type="tel" id="e-tel" placeholder="0341-123456">
-      </div>
-      <div class="form-group">
-        <label>Contacto</label>
-        <input type="text" id="e-contacto" placeholder="Nombre del contacto">
-      </div>
-      <div class="form-group">
-        <label>Tel. contacto</label>
-        <input type="tel" id="e-tel-contacto" placeholder="11 1234-5678">
-      </div>
-      <button class="btn-cli-save" id="e-btn" onclick="submitClientEdit()">Guardar cambios</button>
-      <div class="form-success" id="e-ok">✅ Datos actualizados</div>
-      <div class="form-error" id="e-err"></div>
-    </div>
+    <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
 <script>
-const API = 'https://script.google.com/macros/s/AKfycbxjty_rL0B7iupja9hI2aWVI0Kxj0q3fI4bGWdqirTvgH6s4BHIhlciUzK_s3F53f_K/exec';
-const KEY = 'LDZ625_COLFER';
-const USER = 'Colfersrl', PASS = 'LDZ625';
+const PRODUCTS = [{"codigo": "2509847", "articulo": "ACOPLAMIENTO", "proveedor": "GRACIELA PUENTE", "moneda": "USD", "precio": 1360.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "1494392", "articulo": "AIR HOSE", "proveedor": "COVEMA", "moneda": "USD", "precio": 868.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "4606302064", "articulo": "ALA DE SIN FIN", "proveedor": "ACERIA QUILMES - FABRICACION PROPIA", "moneda": "USD", "precio": 482.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "4606302063", "articulo": "ALA DE SIN FIN", "proveedor": "ACERIA QUILMES - FABRICACION PROPIA", "moneda": "USD", "precio": 482.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0064", "articulo": "ALTERNADOR MERCEDES BENZ ACTROS/ATEGO/AX", "proveedor": "M. BENZ", "moneda": "USD", "precio": 390.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0063", "articulo": "ALTERNADOR SCANIA TRUCK 24V 100A 8 PK", "proveedor": "SCANIA", "moneda": "USD", "precio": 495.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "RWI85419", "articulo": "AMORTIGUADOR CAPOT", "proveedor": "COVEMA", "moneda": "USD", "precio": 139.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/05/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0072", "articulo": "APARATO DE MANDO", "proveedor": "IMET", "moneda": "USD", "precio": 2435.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "5274", "articulo": "ARANDELA", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 2.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0082", "articulo": "ARANDELAS", "proveedor": "", "moneda": "ARS", "precio": 17640.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/06/2026", "clientes": "", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0062", "articulo": "ARRANCADOR SCANIA TIPO BOSCH 24V 5.5KW 12D", "proveedor": "SCANIA", "moneda": "USD", "precio": 595.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "4606302105", "articulo": "AUGER SIN FIN", "proveedor": "COVEMA", "moneda": "USD", "precio": 1452.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "24/02/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0070", "articulo": "AUXILIARES", "proveedor": "CRUZZOLIN", "moneda": "USD", "precio": 467.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/01/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0015", "articulo": "BALDES/CANGILONES", "proveedor": "COLFER", "moneda": "USD", "precio": 443.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/04/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "7415241", "articulo": "BASE - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 11.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "7415242", "articulo": "BASE - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 1.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0032", "articulo": "BOCINA", "proveedor": "BOCINAS LOMAS", "moneda": "USD", "precio": 160.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "BOMBA DE FRENO - HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 3762.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "BOTTON PART SEAL HT22 SET 100", "proveedor": "COVEMA", "moneda": "USD", "precio": 495.0, "monedaCosto": "USD", "costo": 402.02, "margen": 18.8, "ultimaVenta": "16/06/2026", "clientes": "SUPERCEMENTO", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0037", "articulo": "BRAZOS MEZCLADORES", "proveedor": "FUNDICIÓN CARLITOS", "moneda": "USD", "precio": 623.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "7025089", "articulo": "BRAZOS MEZCLADORES PLANTA DE ASFALTO", "proveedor": "COVEMA", "moneda": "USD", "precio": 318.0, "monedaCosto": "USD", "costo": 59.04, "margen": 81.4, "ultimaVenta": "09/06/2026", "clientes": "SAPAG", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0038", "articulo": "BRUSHING (MEDIAS NUECES) P/ EJES INOVA 1200", "proveedor": "FUNDICIÓN CARLITOS", "moneda": "USD", "precio": 4350.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "BUJES RAMDOM EXCENTRICOS", "proveedor": "COVEMA", "moneda": "USD", "precio": 125.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "4419", "articulo": "BULON", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 2.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0005", "articulo": "BULON SOPORTE M. BENZ", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 108.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "03/06/2026", "clientes": "SARITA", "notas": "Precios distintos: $108 a SARITA (03/06/26) / $52 a SARITA (20/05/26)", "tipo": "INTERNO"}, {"codigo": "2103002", "articulo": "BULONES", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 370.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "21/01/2026", "clientes": "SUPERCEMENTO", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "4419", "articulo": "BULONES", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 2.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0023", "articulo": "CABEZAL FABRIMAQ", "proveedor": "BOLOGNA", "moneda": "USD", "precio": 1255.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/04/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0061", "articulo": "CABLE PALPADOR", "proveedor": "IMPORTACIÓN PROPIA", "moneda": "USD", "precio": 1106.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "21/01/2026", "clientes": "COINGSA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0016", "articulo": "CADENA ELEVADOR", "proveedor": "GRACIELA PUENTE", "moneda": "USD", "precio": 14783.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/04/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "CAJAS RODAMIENTOS RM", "proveedor": "COVEMA", "moneda": "USD", "precio": 163.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2203438", "articulo": "CAN NODE", "proveedor": "COVEMA", "moneda": "USD", "precio": 4300.0, "monedaCosto": "USD", "costo": 2346.15, "margen": 45.4, "ultimaVenta": "09/06/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2245685", "articulo": "CARCAZA COMPLETA DERECHA", "proveedor": "COVEMA", "moneda": "USD", "precio": 910.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2245684", "articulo": "CARCAZA COMPLETA IZQUIERDA", "proveedor": "COVEMA", "moneda": "USD", "precio": 789.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2109872", "articulo": "CARCAZA DE FRENO", "proveedor": "COVEMA", "moneda": "USD", "precio": 15400.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "7071768", "articulo": "CHAIN", "proveedor": "COVEMA", "moneda": "USD", "precio": 5887.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "20003076", "articulo": "CHAPA DESGASTE - F", "proveedor": "COVEMA", "moneda": "USD", "precio": 1221.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0067", "articulo": "COMPRESOR COMPLETO CON MOTOR DE 5.5HP. NUEVO PARA PLANTA DE HORMIGON", "proveedor": "BOLOGNA", "moneda": "USD", "precio": 4930.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0069", "articulo": "CONTACTOR", "proveedor": "CRUZZOLIN", "moneda": "USD", "precio": 498.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/01/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "7127397", "articulo": "CONTACTOR", "proveedor": "CRUZZOLIN", "moneda": "USD", "precio": 2856.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "11/05/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0035", "articulo": "CONTACTOR 3RT2023- 1KB40 CON VARISTOR BOBINA 24VDC", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 1809.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "03/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0034", "articulo": "CONTACTOR 3RT2027- 1KB40 CON VARISTOR BOBINA 24VDC", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 1715.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "03/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "191410", "articulo": "CONVEYOR BELT", "proveedor": "COVEMA", "moneda": "USD", "precio": 4600.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "23/02/2026", "clientes": "KAVOS", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2171393", "articulo": "CORREA", "proveedor": "COVEMA", "moneda": "USD", "precio": 77.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "06/03/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2184266", "articulo": "CORREA", "proveedor": "COVEMA", "moneda": "USD", "precio": 126.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "06/03/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2276826", "articulo": "CORREA DE TAMBOR WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 2250.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "23/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "CORREA DENTADA HD90VO", "proveedor": "COVEMA", "moneda": "USD", "precio": 1635.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/01/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "CORREA RM100G0", "proveedor": "COVEMA", "moneda": "USD", "precio": 10030.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "06/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2117172", "articulo": "CORREA TAMBOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 6480.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "06/03/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2064575", "articulo": "CORREA W100", "proveedor": "COVEMA", "moneda": "USD", "precio": 438.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/03/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "CORREAS DE TRITURADORA / D-155", "proveedor": "COVEMA", "moneda": "USD", "precio": 340.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "CORREAS HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 1108.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "11/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "CORREAS PARA TRITURADORA", "proveedor": "COVEMA", "moneda": "USD", "precio": 325.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2292195", "articulo": "CUBIERTA", "proveedor": "LAROCCA", "moneda": "USD", "precio": 6060.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/06/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2292195", "articulo": "CUBIERTAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 5417.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "CUBIERTAS PARA RECLAMADORA - WR240 - 28L26 MAXAM MS 831 26PR", "proveedor": "COVEMA", "moneda": "USD", "precio": 3182.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "7127401", "articulo": "DISYUNTOR MAGNETICO", "proveedor": "CRUZZOLIN", "moneda": "USD", "precio": 2343.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "11/05/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2162619", "articulo": "DOOR PANE", "proveedor": "COVEMA", "moneda": "USD", "precio": 2528.0, "monedaCosto": "USD", "costo": 856.8, "margen": 66.1, "ultimaVenta": "10/06/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0059", "articulo": "EJE MEZCLADOR", "proveedor": "FABRICACIÓN PROPIA", "moneda": "USD", "precio": 6450.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/01/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0071", "articulo": "ELECTROCOMPRESOR AIRE MOD TB315B", "proveedor": "BOLOGNA", "moneda": "USD", "precio": 9332.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2424500", "articulo": "ELECTRODOS", "proveedor": "COVEMA", "moneda": "USD", "precio": 1856.0, "monedaCosto": "USD", "costo": 709.0, "margen": 61.8, "ultimaVenta": "19/06/2026", "clientes": "SUPERCEMENTO", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "EMPAQUETADURA PARTE INFERIOR HT11", "proveedor": "COVEMA", "moneda": "USD", "precio": 2.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "KAVOS", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "145940", "articulo": "ENGINE OIL FILTER", "proveedor": "COVEMA", "moneda": "USD", "precio": 201.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "7116660", "articulo": "ENGRANAJE", "proveedor": "COVEMA", "moneda": "USD", "precio": 6703.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "7050268", "articulo": "ENGRANAJES BIPARTIDOS", "proveedor": "COVEMA", "moneda": "USD", "precio": 4743.0, "monedaCosto": "USD", "costo": 2044.28, "margen": 56.9, "ultimaVenta": "09/06/2026", "clientes": "SAPAG", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0019", "articulo": "ESPEJO COMPLETO ORIGINAL SCANIA", "proveedor": "SCANIA", "moneda": "USD", "precio": 1980.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/04/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2140636", "articulo": "EXPULSADORES DE ANCHURA 150 - W100", "proveedor": "COVEMA", "moneda": "USD", "precio": 181.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "26/05/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "193685", "articulo": "EXPULSOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 170.0, "monedaCosto": "USD", "costo": 90.33, "margen": 46.9, "ultimaVenta": "04/06/2026", "clientes": "CHEDIACK, PIETROBONI", "notas": "Precios distintos: $170 a PIETROBONI (04/06/26) / $130 a CHEDIACK (30/01/26)", "tipo": "ORIGINAL"}, {"codigo": "28812", "articulo": "EXTRACTOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 238.0, "monedaCosto": "USD", "costo": 123.85, "margen": 48.0, "ultimaVenta": "04/06/2026", "clientes": "CHEDIACK, PIETROBONI", "notas": "Precios distintos: $238 a PIETROBONI (04/06/26) / $180 a CHEDIACK (30/01/26)", "tipo": "ORIGINAL"}, {"codigo": "45275", "articulo": "EXTRACTOR DE PUNTAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 112.0, "monedaCosto": "USD", "costo": 59.13, "margen": 47.2, "ultimaVenta": "04/06/2026", "clientes": "CHEDIACK, PIETROBONI, ROVIAL", "notas": "Precios distintos: $112 a PIETROBONI (04/06/26) / $207 a ROVIAL (20/02/26) / $85 a CHEDIACK (30/01/26)", "tipo": "ORIGINAL"}, {"codigo": "CF-0041", "articulo": "FARO DERECHO VOLVO", "proveedor": "VOLVO", "moneda": "USD", "precio": 1715.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0042", "articulo": "FARO IZQUIERDO VOLVO", "proveedor": "VOLVO", "moneda": "USD", "precio": 1715.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "1292404", "articulo": "FILTER CARTRIDGE", "proveedor": "COVEMA", "moneda": "USD", "precio": 302.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2038889", "articulo": "FILTER CARTRIDGE HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 112.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "11493961", "articulo": "FILTER ELEMENT", "proveedor": "COVEMA", "moneda": "USD", "precio": 566.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "12206734", "articulo": "FILTER ELEMENT", "proveedor": "COVEMA", "moneda": "USD", "precio": 1710.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "5068", "articulo": "FILTER VENTILATION", "proveedor": "COVEMA", "moneda": "USD", "precio": 76.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2104522", "articulo": "FILTRO", "proveedor": "COVEMA", "moneda": "USD", "precio": 232.0, "monedaCosto": "USD", "costo": 128.79, "margen": 44.5, "ultimaVenta": "05/06/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "90200", "articulo": "FILTRO", "proveedor": "COVEMA", "moneda": "USD", "precio": 574.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "5068", "articulo": "FILTRO", "proveedor": "COVEMA", "moneda": "USD", "precio": 75.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "118266", "articulo": "FILTRO", "proveedor": "COVEMA", "moneda": "USD", "precio": 405.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2272156", "articulo": "FILTRO CABINA", "proveedor": "COVEMA", "moneda": "USD", "precio": 420.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2091354", "articulo": "FILTRO COMBUSTIBLE", "proveedor": "COVEMA", "moneda": "USD", "precio": 78.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2164645", "articulo": "FILTRO COMBUSTIBLE HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 121.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2111170", "articulo": "FILTRO COMBUSTIBLE WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 249.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/02/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "RWI156576", "articulo": "FILTRO DE ACEITE HIDRAULICO", "proveedor": "COVEMA", "moneda": "USD", "precio": 211.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/02/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "RWI90200", "articulo": "FILTRO DE ACEITE HIDRAULICO", "proveedor": "COVEMA", "moneda": "USD", "precio": 615.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/02/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "11836791", "articulo": "FILTRO DE ACEITE LIEBHEER", "proveedor": "COVEMA", "moneda": "USD", "precio": 336.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2111169", "articulo": "FILTRO DE ACEITE MOTOR WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 349.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/02/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "1274325", "articulo": "FILTRO DE CABINA", "proveedor": "COVEMA", "moneda": "USD", "precio": 8.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "09/06/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2173000", "articulo": "FILTRO DE CABINA WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 385.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "03/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2173001", "articulo": "FILTRO DE CABINA WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 485.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "03/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "12838656", "articulo": "FILTRO DE COMBUSTIBLE LIEBHEER", "proveedor": "COVEMA", "moneda": "USD", "precio": 298.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "FILTRO DE COMBUSTIBLE RWI195744 Eq WK930/6x", "proveedor": "COVEMA", "moneda": "USD", "precio": 110.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/02/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "RHA251496", "articulo": "FILTRO HIDRAULICO HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 59.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "9624251000", "articulo": "FILTRO HIDRAULICO VOGELE", "proveedor": "COVEMA", "moneda": "USD", "precio": 54.0, "monedaCosto": "USD", "costo": 28.73, "margen": 46.8, "ultimaVenta": "09/06/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "9624531001", "articulo": "FILTRO HIDRAULICO VOGELE SUPER 1600-3", "proveedor": "COVEMA", "moneda": "USD", "precio": 491.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/02/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "9624541001", "articulo": "FILTRO HIDRAULICO VOGELE SUPER 1600-3", "proveedor": "COVEMA", "moneda": "USD", "precio": 507.0, "monedaCosto": "USD", "costo": 209.12, "margen": 58.8, "ultimaVenta": "09/06/2026", "clientes": "LAROMET, PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "RWI2222815", "articulo": "FILTRO SEPARADOR DE AGUA", "proveedor": "COVEMA", "moneda": "USD", "precio": 155.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/02/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "FILTROS MANGAS PLISADAS, CORTAS. ALTERNATIVAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 872.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "FILTROS MANGAS PLISADAS, LARGAS. ALTERNATIVAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 886.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/06/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "FLAPPERS", "proveedor": "COVEMA", "moneda": "USD", "precio": 1813.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/06/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0026", "articulo": "FONDOS ACARREADORES EN ACERO SAE1045", "proveedor": "COLFER", "moneda": "USD", "precio": 4494.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/04/2026", "clientes": "FONTANA NICASTRO", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "FORZADOR P/WR-240", "proveedor": "COVEMA", "moneda": "USD", "precio": 7896.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "FUEL FILTER", "proveedor": "COVEMA", "moneda": "USD", "precio": 156.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0011", "articulo": "G2 - OMRON", "proveedor": "IMPORTACIÓN PROPIA (ITALIA)", "moneda": "USD", "precio": 231.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0018", "articulo": "GALERA COMPLETA ORIGINAL SCANIA", "proveedor": "SCANIA", "moneda": "USD", "precio": 24975.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/04/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2973894", "articulo": "GLASS PANE", "proveedor": "COVEMA", "moneda": "USD", "precio": 1492.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "11/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2134859", "articulo": "GLASS PANE", "proveedor": "COVEMA", "moneda": "USD", "precio": 1138.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/04/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "GUARD PLATE LEFT SIDE RM100", "proveedor": "COVEMA", "moneda": "USD", "precio": 730.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "GUARD PLATE RIGHT SIDE RM100", "proveedor": "COVEMA", "moneda": "USD", "precio": 730.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0068", "articulo": "GUARDA MOTOR", "proveedor": "CRUZZOLIN", "moneda": "USD", "precio": 890.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/01/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0054", "articulo": "GUARDA MOTOR - GV3P65", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 376.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2341067", "articulo": "GUIRNALDA", "proveedor": "COVEMA", "moneda": "USD", "precio": 1030.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/03/2026", "clientes": "CONSTRUMEX", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "190448", "articulo": "GUIRNALDA", "proveedor": "COVEMA", "moneda": "USD", "precio": 1130.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/03/2026", "clientes": "CONSTRUMEX", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "GUIRNALDAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 1205.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/04/2026", "clientes": "COINGSA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "190448", "articulo": "GUIRNALDAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 189.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/02/2026", "clientes": "KAVOS", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2030857", "articulo": "HEAD LIGHT - WX", "proveedor": "COVEMA", "moneda": "USD", "precio": 638.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "HEAD LIGHT HAMM HD90", "proveedor": "COVEMA", "moneda": "USD", "precio": 427.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "90200", "articulo": "HIDRAULIC OIL", "proveedor": "COVEMA", "moneda": "USD", "precio": 550.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0040", "articulo": "HOJA DE ELASTICO SCANIA 3", "proveedor": "SCANIA", "moneda": "USD", "precio": 410.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0029", "articulo": "HOJAS DE ELASTICO M. BENZ 3131", "proveedor": "ELASTICOS DEL SOL", "moneda": "USD", "precio": 515.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "30/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0030", "articulo": "HOJAS DE ELASTICO SCANIA", "proveedor": "ELASTICOS DEL SOL", "moneda": "USD", "precio": 540.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "30/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "1488791", "articulo": "HOSE HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 788.0, "monedaCosto": "USD", "costo": 119.27, "margen": 84.9, "ultimaVenta": "10/06/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2913352", "articulo": "HOT AIR HOSE", "proveedor": "COVEMA", "moneda": "USD", "precio": 1153.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2142234", "articulo": "INDICADOR LAMP", "proveedor": "COVEMA", "moneda": "USD", "precio": 306.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "INDICADOR LAMP HAMM HD90", "proveedor": "COVEMA", "moneda": "USD", "precio": 225.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2174606", "articulo": "INYECTOR DE AGUA", "proveedor": "COVEMA", "moneda": "USD", "precio": 820.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "09/03/2026", "clientes": "ROVIAL", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0074", "articulo": "INYECTORES", "proveedor": "IMPORTACIÓN PROPIA (CHINA)/MOCA (REPARACIÓN)", "moneda": "USD", "precio": 1294.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "Inyectores originales Deutz para HAMM 3411", "proveedor": "COVEMA", "moneda": "USD", "precio": 1234.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "JUEGO DE MARTILLO x 4 - RUBBLE MASTER RM- 100", "proveedor": "COVEMA", "moneda": "ARS", "precio": 30781800.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/06/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0012", "articulo": "JUEGO DE PLACAS GUIAS - DYNAPAC / REPARACION DE LAS PLACAS DE CIERRE DE PLANCHA", "proveedor": "COLFER", "moneda": "USD", "precio": 838.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/04/2026", "clientes": "FONTANA NICASTRO", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0033", "articulo": "JUEGO DE PLANCHAS CAT", "proveedor": "COLFER", "moneda": "USD", "precio": 4887.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "JUEGOS TACOS DE CABINA", "proveedor": "COVEMA", "moneda": "USD", "precio": 2200.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0044", "articulo": "KIT 50 BULONES", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 240.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/02/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "KIT AGITADOR COMPLETO", "proveedor": "COVEMA", "moneda": "USD", "precio": 13414.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "04/05/2026", "clientes": "SAPAG", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0060", "articulo": "KIT BULONERIA", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 333.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/01/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "2103002", "articulo": "KIT BULONES", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 380.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "23/04/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "KIT FILTROS PARA RECLAMADORA WIRGEN WR-200", "proveedor": "COVEMA", "moneda": "USD", "precio": 1305.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/04/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "KIT REPARACION CILINDROS EQUIPO WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 1342.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "21/05/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "KIT SELLOS X 100", "proveedor": "COVEMA", "moneda": "USD", "precio": 878.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "08/05/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0077", "articulo": "KIT SOPORTE ARO SECADOR CON ANGULOS DE TRABAS", "proveedor": "TALLERES WILLY - FABRICACION PROPIA", "moneda": "USD", "precio": 748.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "KIT TAPONES X 100", "proveedor": "COVEMA", "moneda": "USD", "precio": 674.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "08/05/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0079", "articulo": "KIT x 60 - BULONERIA GRADO 10.9", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 1195.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "08/06/2026", "clientes": "POSE SA", "notas": "", "tipo": "INTERNO"}, {"codigo": "160462", "articulo": "LATCH CLOSING", "proveedor": "COVEMA", "moneda": "USD", "precio": 612.0, "monedaCosto": "USD", "costo": 267.37, "margen": 56.3, "ultimaVenta": "10/06/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "12244489", "articulo": "LIGHT - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 6484.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "12244487", "articulo": "LIGHT - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 6484.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "224739", "articulo": "LIMPIADOR PARA HAMM HD90", "proveedor": "COVEMA", "moneda": "USD", "precio": 564.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0076", "articulo": "LOWER DOOR TINTED GLASS - JCB", "proveedor": "IMPORTACIÓN PROPIA (INGLATERRA VICARY)", "moneda": "USD", "precio": 481.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0020", "articulo": "LUCB 32 BL", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 1131.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/04/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0047", "articulo": "LUCB05BL", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 315.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0046", "articulo": "LUCB12BL", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 367.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0048", "articulo": "LUCB32BL", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 418.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0002", "articulo": "LUCBC - UNIDAD DE PROTECCION", "proveedor": "ELEC GRAL PAZ", "moneda": "USD", "precio": 376.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/05/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "85691", "articulo": "MAIN FILTER AIR", "proveedor": "COVEMA", "moneda": "USD", "precio": 806.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "11066582", "articulo": "MAIN MIRROR - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 785.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "MANGAS ORIGINALES NOMEX ARAMIDA", "proveedor": "COVEMA", "moneda": "USD", "precio": 55.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "VIAL TEC", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2319829", "articulo": "MANGUERA", "proveedor": "COVEMA", "moneda": "USD", "precio": 350.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2045407", "articulo": "MANGUERA", "proveedor": "COVEMA", "moneda": "USD", "precio": 535.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/03/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2287657", "articulo": "MANGUERA", "proveedor": "COVEMA", "moneda": "USD", "precio": 1385.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/03/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "MANGUERA, ABRAZADERAS RIOO1", "proveedor": "COVEMA", "moneda": "USD", "precio": 1270.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "24/02/2026", "clientes": "COINGSA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0039", "articulo": "MANOMETRO", "proveedor": "GERARDO PARUOLO", "moneda": "USD", "precio": 57.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0080", "articulo": "MANOMETRO DE TUBO U", "proveedor": "", "moneda": "ARS", "precio": 2726670.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "11/06/2026", "clientes": "LAROMET", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "MARTILLOS AMARILLOS", "proveedor": "COVEMA", "moneda": "USD", "precio": 5962.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "11643427", "articulo": "MIRROR - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 907.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "MODULO RELAY", "proveedor": "COVEMA", "moneda": "USD", "precio": 97.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0051", "articulo": "MOTOR HIDRAULICO", "proveedor": "IMPORTACIÓN PROPIA (CHINA)", "moneda": "USD", "precio": 1472.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "CODI", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0022", "articulo": "MTS CAÑO 1/8 DE COBRE C/ VIROLAS Y TUERCAS", "proveedor": "GAS AVELLANEDA", "moneda": "USD", "precio": 4.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/04/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0057", "articulo": "NEUMATICOS - 29.5R25 BRIDGESTONE JAPON VLT MS E3 TL", "proveedor": "JAVIER LAROCA", "moneda": "USD", "precio": 6812.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "NEUMATICOS 28L26 LS2 Sl1 ST26 - PARA RECLAMADORA WIRTGEN WR-240", "proveedor": "COVEMA", "moneda": "USD", "precio": 3720.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/01/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "11836791", "articulo": "OIL FILTER", "proveedor": "COVEMA", "moneda": "USD", "precio": 298.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "11820146", "articulo": "OPERATION - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 907.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2411111", "articulo": "PAD  EPS - TEJAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 235.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "24/06/2026", "clientes": "PIETROBONI, SUPERCEMENTO", "notas": "Precios distintos: $235 a SUPERCEMENTO (24/06/26) / $226 a PIETROBONI (23/04/26)", "tipo": "ORIGINAL"}, {"codigo": "23512341", "articulo": "PASADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 378.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "09/03/2026", "clientes": "ROVIAL", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2063361", "articulo": "PASADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 268.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "09/03/2026", "clientes": "ROVIAL", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0036", "articulo": "PASTILLAS MEZCLADOR INOVA 1200", "proveedor": "FUNDICIÓN CARLITOS", "moneda": "USD", "precio": 585.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "7025663", "articulo": "PASTILLAS MEZCLADOR PLANTA DE ASFALTO", "proveedor": "FUNDICIÓN CARLITOS", "moneda": "USD", "precio": 212.0, "monedaCosto": "USD", "costo": 33.61, "margen": 84.1, "ultimaVenta": "09/06/2026", "clientes": "SAPAG", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "PICK SUPPORT HT22 PLUS D20", "proveedor": "COVEMA", "moneda": "USD", "precio": 201.0, "monedaCosto": "USD", "costo": 164.15, "margen": 18.3, "ultimaVenta": "16/06/2026", "clientes": "SUPERCEMENTO", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0007", "articulo": "PICOS ASPERSORES COMPLETOS PARA COMPACTADOR VOLVO", "proveedor": "VOLVO", "moneda": "USD", "precio": 55.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/05/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0066", "articulo": "PLACAS DE TEFLON", "proveedor": "ELASTICOS DEL SOL", "moneda": "USD", "precio": 65.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2280576", "articulo": "PLAQUETA", "proveedor": "COVEMA", "moneda": "USD", "precio": 5395.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "04/05/2026", "clientes": "SAPAG", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2595873", "articulo": "PLASTIC PLATE", "proveedor": "COVEMA", "moneda": "USD", "precio": 2860.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2002203", "articulo": "PLATE - F", "proveedor": "COVEMA", "moneda": "USD", "precio": 2102.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0025", "articulo": "PLATO CON TEFLON", "proveedor": "ELASTICOS DEL SOL", "moneda": "USD", "precio": 2800.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0065", "articulo": "PLATOS JOST", "proveedor": "ELASTICOS DEL SOL", "moneda": "USD", "precio": 2670.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0024", "articulo": "PLATOS JOST 185mm", "proveedor": "ELASTICOS DEL SOL", "moneda": "USD", "precio": 2792.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "09/04/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "PLUG HT22", "proveedor": "COVEMA", "moneda": "USD", "precio": 422.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/06/2026", "clientes": "SUPERCEMENTO", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "PORTA PUNTAS HT-22 D20", "proveedor": "COVEMA", "moneda": "USD", "precio": 276.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "08/05/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "PORTA PUNTAS HT11-R D22", "proveedor": "", "moneda": "USD", "precio": 215.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/06/2026", "clientes": "KAVOS, LAROMET, PIETROBONI, SAPAG", "notas": "Precios distintos: $215 a PIETROBONI (22/06/26) / $185 a SAPAG (04/06/26) / $174 a KAVOS (04/06/26) / $185 a LAROMET (20/03/26)", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "PORTA PUNTAS HT22 PLUS D20", "proveedor": "COVEMA", "moneda": "USD", "precio": 196.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2276826", "articulo": "POWER BELT", "proveedor": "COVEMA", "moneda": "USD", "precio": 2230.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2184266", "articulo": "POWER BELT", "proveedor": "COVEMA", "moneda": "USD", "precio": 87.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "30/01/2026", "clientes": "CHEDIACK", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "7077210", "articulo": "PROGRAMADO R DE ENCENDIDO", "proveedor": "COVEMA", "moneda": "USD", "precio": 5375.0, "monedaCosto": "USD", "costo": 1533.0, "margen": 71.5, "ultimaVenta": "24/06/2026", "clientes": "SAPAG", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0049", "articulo": "PROGRAMADOR", "proveedor": "AUTOQUEM", "moneda": "USD", "precio": 7160.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "10/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0010", "articulo": "PROGRAMADOR DE LLAMA", "proveedor": "AUTOQUEM", "moneda": "USD", "precio": 1456.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0008", "articulo": "PROGRAMADOR HONEYWELL", "proveedor": "AUTOQUEM", "moneda": "USD", "precio": 8543.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "04/05/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2183816", "articulo": "PROTECCION LATERAL", "proveedor": "TALLERES WILLY - FABRICACION PROPIA", "moneda": "USD", "precio": 818.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0043", "articulo": "PROTECTOR FAROS", "proveedor": "VOLVO", "moneda": "USD", "precio": 865.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0075", "articulo": "PROTECTORES DE OPTICAS", "proveedor": "IMPORTACIÓN PROPIA (INGLATERRA VICARY)", "moneda": "USD", "precio": 875.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "PUNTAS D20", "proveedor": "", "moneda": "USD", "precio": 11.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/06/2026", "clientes": "OMEGA MLP, PUNTA VIAL, SAPAG, SARITA, SERVIPET", "notas": "Precios distintos: $11 a SAPAG (22/06/26) / $12 a PUNTA VIAL (04/06/26) / $13 a OMEGA MLP (04/06/26) / $18 a SERVIPET (12/05/26) / $20 a SARITA (08/05/26)", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "PUNTAS D22", "proveedor": "COVEMA", "moneda": "USD", "precio": 21.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/06/2026", "clientes": "VIAL TEC", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "PUNTAS RECLAMADORA PICKW6/22", "proveedor": "COVEMA", "moneda": "USD", "precio": 13.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "10/04/2026", "clientes": "SERVIPET", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "PUNTAS W6/20X2", "proveedor": "COVEMA", "moneda": "USD", "precio": 12.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "PURGADOR AUTOMATICO P/ COMPRESOR FILTRO DE MANGAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 992.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0009", "articulo": "QUEMADOR PLANTA DE ASFALTO", "proveedor": "AUTOQUEM", "moneda": "USD", "precio": 6856.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "1255320", "articulo": "RABBER METAL BUFFER", "proveedor": "COVEMA", "moneda": "USD", "precio": 742.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "1255339", "articulo": "RABBER METAL BUFFER", "proveedor": "COVEMA", "moneda": "USD", "precio": 730.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "146458", "articulo": "RASCADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 561.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "146457", "articulo": "RASCADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 561.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "44638", "articulo": "RASCADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 568.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "146456", "articulo": "RASCADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 482.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "44639", "articulo": "RASCADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 575.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "43408", "articulo": "RASCADOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 487.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2134361", "articulo": "REAR PANE", "proveedor": "COVEMA", "moneda": "USD", "precio": 1900.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "RECIPIENTES LUBRICADOS LIEBHEER", "proveedor": "COVEMA", "moneda": "USD", "precio": 856.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/04/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2162344", "articulo": "RECUBRIMIENTO LADO IZQUIERDO", "proveedor": "COVEMA", "moneda": "USD", "precio": 975.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "RELAY HAMM ORIGINAL", "proveedor": "COVEMA", "moneda": "USD", "precio": 105.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/04/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "1289829", "articulo": "RELE", "proveedor": "COVEMA", "moneda": "USD", "precio": 100.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0003", "articulo": "RELE INVERSOR FINDER", "proveedor": "CRUZZOLINI", "moneda": "USD", "precio": 97.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/05/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0004", "articulo": "RELE OMRON", "proveedor": "CRUZZOLINI", "moneda": "USD", "precio": 337.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/05/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2419317", "articulo": "REPUESTOS DE EQUIPO", "proveedor": "COVEMA", "moneda": "USD", "precio": 780.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/04/2026", "clientes": "CONSTRUMEX", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2035050", "articulo": "RESISTENCIA", "proveedor": "COVEMA", "moneda": "USD", "precio": 526.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "RETAINER SCREW HT11 M30X2", "proveedor": "COVEMA", "moneda": "USD", "precio": 27.0, "monedaCosto": "USD", "costo": 22.18, "margen": 17.9, "ultimaVenta": "16/06/2026", "clientes": "SUPERCEMENTO", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "224773", "articulo": "RETEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 1223.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "210029", "articulo": "RODILLO", "proveedor": "COVEMA", "moneda": "USD", "precio": 336.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2264957", "articulo": "RODILLO NEUMATICO HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 1035.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "54954", "articulo": "RODILLOS", "proveedor": "COVEMA", "moneda": "USD", "precio": 128.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/02/2026", "clientes": "KAVOS", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "191392", "articulo": "RODILLOS RECTOS", "proveedor": "COVEMA", "moneda": "USD", "precio": 185.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/02/2026", "clientes": "KAVOS", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "ROLETE", "proveedor": "COVEMA", "moneda": "USD", "precio": 3205.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/06/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2341067", "articulo": "ROLLER", "proveedor": "COVEMA", "moneda": "USD", "precio": 676.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "190448", "articulo": "ROLLER", "proveedor": "COVEMA", "moneda": "USD", "precio": 1150.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "54954", "articulo": "ROLO", "proveedor": "COVEMA", "moneda": "USD", "precio": 260.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2341068", "articulo": "ROLO", "proveedor": "COVEMA", "moneda": "USD", "precio": 650.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/05/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "RUEDA DELANTERA COMPLETA EQUIPO WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 9674.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "21/05/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0027", "articulo": "RUEDA GUIA CADENA ACARREADORA", "proveedor": "COLFER", "moneda": "USD", "precio": 458.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/04/2026", "clientes": "FONTANA NICASTRO", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "RUEDA TRASERA COMPLETA EQUIPO WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 7432.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "21/05/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "90980", "articulo": "SAFETY AIR FILTER", "proveedor": "COVEMA", "moneda": "USD", "precio": 604.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "12213565", "articulo": "SAFETY CARTDIDGE", "proveedor": "COVEMA", "moneda": "USD", "precio": 397.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "SAFETY SWITCH", "proveedor": "COVEMA", "moneda": "USD", "precio": 1570.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2295331", "articulo": "SCRAPPER BRUSH", "proveedor": "COVEMA", "moneda": "USD", "precio": 88.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "12259139", "articulo": "SCREW - LIEBHERR", "proveedor": "COVEMA", "moneda": "USD", "precio": 3.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "SELLO INFERIOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 2.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "2034049", "articulo": "SELLO ORIGINAL HAMM GRW-18", "proveedor": "COVEMA", "moneda": "USD", "precio": 205.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "7091006", "articulo": "SENSOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 1565.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/03/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2161806", "articulo": "SENSOR", "proveedor": "COVEMA", "moneda": "USD", "precio": 880.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "28/01/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0055", "articulo": "SENSOR DE LLAMA", "proveedor": "AUTOQUEM", "moneda": "USD", "precio": 1181.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2136472", "articulo": "SENSOR DE PRESION DE AGUA - APLANADORA HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 1092.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2085228", "articulo": "SENSOR DE RESERVA 2085228", "proveedor": "COVEMA", "moneda": "USD", "precio": 596.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2703584", "articulo": "SENSOR DE REVOLUCIONES ARBOL DE LEVA", "proveedor": "COVEMA", "moneda": "USD", "precio": 1484.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2062292", "articulo": "SENSOR DE REVOLUCIONES HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 1780.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "25/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0058", "articulo": "SENSOR PRESION DE ACEITE", "proveedor": "DEUTZ", "moneda": "USD", "precio": 352.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/01/2026", "clientes": "SUPERCEMENTO", "notas": "", "tipo": "INTERNO"}, {"codigo": "7091006", "articulo": "SENSOR UV", "proveedor": "COVEMA", "moneda": "USD", "precio": 2768.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "04/05/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0050", "articulo": "SERVOMOTOR", "proveedor": "AUTOQUEM", "moneda": "USD", "precio": 3460.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "10/02/2026", "clientes": "LAROMET", "notas": "", "tipo": "INTERNO"}, {"codigo": "186780", "articulo": "SOLENOIDE", "proveedor": "GERARDO PARUOLO", "moneda": "USD", "precio": 260.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "15/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0017", "articulo": "SOLENOIDE 14mm INT x 50mm LNG", "proveedor": "GERARDO PARUOLO", "moneda": "USD", "precio": 612.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/04/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "INTERNO"}, {"codigo": "2317454", "articulo": "SOPORTE", "proveedor": "COVEMA", "moneda": "USD", "precio": 595.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0014", "articulo": "SOPORTES ARO SECADOR", "proveedor": "COLFER", "moneda": "USD", "precio": 478.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/04/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "38001149", "articulo": "SPARK PLUG", "proveedor": "COVEMA", "moneda": "USD", "precio": 157.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "08/06/2026", "clientes": "CONSTRUMEX", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "1522647", "articulo": "TACO DE CABINA - RHA1522647", "proveedor": "COVEMA/GOM INDUSTRIA", "moneda": "USD", "precio": 285.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "1522655", "articulo": "TACO DE CABINA - RHA1522655", "proveedor": "COVEMA/GOM INDUSTRIA", "moneda": "USD", "precio": 267.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "1255320", "articulo": "TACOS DE CABINA", "proveedor": "COVEMA", "moneda": "USD", "precio": 742.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "04/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "1255339", "articulo": "TACOS DE CABINA", "proveedor": "COVEMA", "moneda": "USD", "precio": 730.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "04/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0013", "articulo": "TACOS DE RODILLO COMPACTADOR DYNAPAC CA35D", "proveedor": "GOM INDUSTRIA", "moneda": "USD", "precio": 360.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "24/04/2026", "clientes": "SERVIPET", "notas": "", "tipo": "INTERNO"}, {"codigo": "2030860", "articulo": "TAIL LIGHT", "proveedor": "COVEMA", "moneda": "USD", "precio": 292.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0078", "articulo": "TALISCAS", "proveedor": "TALLERES WILLY - FABRICACION PROPIA", "moneda": "USD", "precio": 237.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "05/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "TAPON HEXAGONAL HT11", "proveedor": "COVEMA", "moneda": "USD", "precio": 4.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "KAVOS", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "TAPONES DE GOMA", "proveedor": "COVEMA", "moneda": "USD", "precio": 5.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "", "articulo": "TAPÓN", "proveedor": "COVEMA", "moneda": "USD", "precio": 96.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0031", "articulo": "TENSOR M. BENZ 3131", "proveedor": "ELASTICOS DEL SOL", "moneda": "USD", "precio": 1240.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "30/03/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "2074349", "articulo": "TENSOR PARA HAMM 3411", "proveedor": "COVEMA", "moneda": "USD", "precio": 1020.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "30/04/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0001", "articulo": "TESSYS - GUARDA MOTOR MAGNETICO", "proveedor": "ELEC GRAL PAZ", "moneda": "USD", "precio": 1787.0, "monedaCosto": "USD", "costo": 587.0, "margen": 67.2, "ultimaVenta": "19/05/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0053", "articulo": "TESSYS LuB12", "proveedor": "ELEC GRAL PAZ", "moneda": "USD", "precio": 1137.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "22/06/2026", "clientes": "SAPAG, SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0052", "articulo": "TESSYS LuB32", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 1225.0, "monedaCosto": "", "costo": 0.01, "margen": null, "ultimaVenta": "05/06/2026", "clientes": "SAPAG, SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0021", "articulo": "TESYS 12-24VAC/DC", "proveedor": "ELEC. GRAL. PAZ", "moneda": "USD", "precio": 100.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/04/2026", "clientes": "SAPAG", "notas": "", "tipo": "INTERNO"}, {"codigo": "", "articulo": "TOBERAS", "proveedor": "COVEMA", "moneda": "USD", "precio": 1124.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "16/03/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "4421", "articulo": "TORNILLO", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 2.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "TORNILLO DE FIJACION HT11 M30X2 WIRTGEN", "proveedor": "COVEMA", "moneda": "USD", "precio": 27.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "13/03/2026", "clientes": "KAVOS", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "191936", "articulo": "TRACK ROLLER", "proveedor": "COVEMA", "moneda": "USD", "precio": 1500.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/04/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0056", "articulo": "TRAFO ENCENDIDO", "proveedor": "AUTOQUEM", "moneda": "USD", "precio": 2230.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0073", "articulo": "TRANSMISOR", "proveedor": "IMET", "moneda": "USD", "precio": 277.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "14/01/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0006", "articulo": "TUBO SACA BULON", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 382.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "08/05/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "5269", "articulo": "TUERCA", "proveedor": "BULONES COIRO", "moneda": "USD", "precio": 2.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "18/03/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "", "articulo": "TUERCA DE CUBO", "proveedor": "COVEMA", "moneda": "USD", "precio": 0.21, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "29/04/2026", "clientes": "SARITA", "notas": "", "tipo": "SIN_CODIGO"}, {"codigo": "CF-0081", "articulo": "TUERCAS", "proveedor": "", "moneda": "ARS", "precio": 77910.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "19/06/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "OT46329", "articulo": "TURBO", "proveedor": "IMPORTACIÓN PROPIA (CHINA)", "moneda": "USD", "precio": 2170.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "07/01/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "CF-0045", "articulo": "TURBO 3411", "proveedor": "IMPORTACIÓN PROPIA (CHINA)", "moneda": "USD", "precio": 2342.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "20/02/2026", "clientes": "SARITA", "notas": "", "tipo": "INTERNO"}, {"codigo": "CF-0028", "articulo": "VARIADOR SCHNEIDER 45KW60HP", "proveedor": "IMPORTACION PROPIA (ITALIA)", "moneda": "USD", "precio": 6365.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "LAROMET", "notas": "", "tipo": "INTERNO"}, {"codigo": "1273221", "articulo": "VENTILADOR COMPLETO HAMM", "proveedor": "COVEMA", "moneda": "USD", "precio": 1060.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "27/03/2026", "clientes": "COINGSA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "2134815", "articulo": "VIDRIO", "proveedor": "COVEMA", "moneda": "USD", "precio": 1214.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "02/02/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "230985", "articulo": "WEAR BOLT", "proveedor": "COVEMA", "moneda": "ARS", "precio": 887400.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "12/06/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "288853", "articulo": "YUGO", "proveedor": "COVEMA", "moneda": "USD", "precio": 6239.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "17/04/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "305383", "articulo": "YUGO HAMM GRW-18-305383", "proveedor": "COVEMA", "moneda": "USD", "precio": 4885.0, "monedaCosto": "", "costo": null, "margen": null, "ultimaVenta": "01/04/2026", "clientes": "SARITA", "notas": "", "tipo": "ORIGINAL"}, {"codigo": "192280", "articulo": "rodamiento", "proveedor": "COVEMA", "moneda": "USD", "precio": 1530.0, "monedaCosto": "USD", "costo": 650.0, "margen": 57.5, "ultimaVenta": "25/06/2026", "clientes": "PIETROBONI", "notas": "", "tipo": "ORIGINAL"}];
 
-const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
-function fmtMes(fecha) {
-  if (!fecha) return '';
-  // DD/MM/YYYY
-  const p = fecha.split('/');
-  if (p.length === 3 && p[2].length === 4) return MESES[parseInt(p[1])-1] + ' ' + p[2];
-  // cualquier otro formato (ej: "Mon Jan 07 2026 00:00:00 GMT...")
-  const d = new Date(fecha);
-  if (!isNaN(d)) return MESES[d.getMonth()] + ' ' + d.getFullYear();
-  return '';
-}
-function fixDate(v) {
-  if (!v) return '';
-  if (/^\d{2}\/\d{2}\/\d{4}$/.test(v)) return v;
-  const d = new Date(v);
-  if (!isNaN(d)) return `${String(d.getDate()).padStart(2,'0')}/${String(d.getMonth()+1).padStart(2,'0')}/${d.getFullYear()}`;
-  return v;
+let currentFilter = 'all';
+let currentSort = 'name';
+let searchTerm = '';
+
+function badgeHTML(tipo, proveedor) {
+  const labels = { INTERNO: 'Código Interno', ORIGINAL: 'Cód. Original', SIN_CODIGO: 'Sin código', COVEMA: 'COVEMA' };
+  const cls = tipo === 'SIN_CODIGO' ? 'badge-sin_codigo' : `badge-${tipo.toLowerCase()}`;
+  let b = `<span class="badge ${cls}">${labels[tipo] || tipo}</span>`;
+  if (proveedor) b += ` <span class="badge badge-proveedor">${proveedor}</span>`;
+  return b;
 }
 
-// Busca stats para un cliente por nombre completo, con fallback parcial
-function findClientStats(nombre) {
-  const key = nombre.toUpperCase();
-  if (STATS_CLI[key]) return STATS_CLI[key];
-  // palabras significativas del nombre completo (más de 3 letras, no palabras genéricas)
-  const skip = new Set(['SOCIEDAD','ANONIMA','LTDA','SRL','S.R.L','SA','S.A','CIA','COMPANIA','THE','LOS','LAS','DEL','DE','LA','EL']);
-  const words = nombre.toUpperCase().split(/[\s.,\-\/()]+/).filter(w => w.length > 3 && !skip.has(w));
-  for (const [k, v] of Object.entries(STATS_CLI)) {
-    if (words.some(w => k.includes(w))) return v;
-  }
-  return null;
+function isCovema(p) {
+  return p.proveedor && p.proveedor.toUpperCase().includes('COVEMA');
 }
 
-let PRODUCTS = [], dashLoaded = false, cliLoaded = false;
-let filter = 'all', sort = 'name', q = '';
-let CLIENTES = [], STATS_CLI = {};
-let currentClient = null;
-
-// ── LOGIN ──
-function doLogin() {
-  const u = document.getElementById('lu').value.trim();
-  const p = document.getElementById('lp').value.trim();
-  if (u === USER && p === PASS) {
-    sessionStorage.setItem('cf_auth','1');
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app').style.display = 'flex';
-    initApp();
-  } else {
-    document.getElementById('lerr').style.display = 'block';
-  }
-}
-document.getElementById('lu').addEventListener('keydown', e => { if(e.key==='Enter') document.getElementById('lp').focus(); });
-document.getElementById('lp').addEventListener('keydown', e => { if(e.key==='Enter') doLogin(); });
-if (sessionStorage.getItem('cf_auth') === '1') {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'flex';
-  initApp();
+function getFilterType(p) {
+  if (isCovema(p)) return 'COVEMA';
+  return p.tipo;
 }
 
-function initApp() { recargarCatalogo(); loadDashboard(); }
-
-async function recargarCatalogo() {
-  document.getElementById('hcount').textContent = 'Sincronizando...';
-  document.getElementById('list').innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando catálogo...</p></div>';
-  try {
-    const res = await fetch(`${API}?key=${KEY}&action=getCatalogo`);
-    const data = await res.json();
-    if (data.error) throw new Error(data.error);
-    PRODUCTS = data.map(p => ({
-      codigo: p['Código'] || '',
-      articulo: p['Artículo'] || '',
-      proveedor: p['Proveedor'] || '',
-      moneda: p['Moneda'] || 'USD',
-      precio: parseFloat(p['Precio Venta']) || null,
-      costo: parseFloat(p['Costo']) || null,
-      margen: (() => { const v = parseFloat(p['Margen %']); if (!v || isNaN(v)) return null; return v < 1 ? Math.round(v * 10000) / 100 : Math.round(v * 100) / 100; })(),
-      ultimaVenta: fixDate(p['Última Venta']),
-      clientes: p['Clientes'] || '',
-      notas: p['Notas'] || '',
-      tipo: p['Código'] && p['Código'].startsWith('CF-') ? 'INTERNO' : (p['Código'] ? 'ORIGINAL' : 'SIN_CODIGO'),
-    }));
-    sessionStorage.setItem('cf_catalog', JSON.stringify(PRODUCTS));
-    renderCatalogo();
-    setupAutocomplete();
-  } catch(e) {
-    const cached = sessionStorage.getItem('cf_catalog');
-    if (cached) { PRODUCTS = JSON.parse(cached); renderCatalogo(); document.getElementById('hcount').textContent = PRODUCTS.length + ' productos (sin conexión)'; }
-    else document.getElementById('list').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>Sin conexión y sin caché</p></div>';
-  }
+function matchesFilter(p) {
+  if (currentFilter === 'all') return true;
+  return getFilterType(p) === currentFilter;
 }
 
-function isCovema(p) { return p.proveedor && p.proveedor.toUpperCase().includes('COVEMA'); }
-function ftype(p) { return isCovema(p) ? 'COVEMA' : p.tipo; }
+function matchesSearch(p) {
+  if (!searchTerm) return true;
+  const q = searchTerm.toLowerCase();
+  return (
+    p.articulo.toLowerCase().includes(q) ||
+    p.codigo.toLowerCase().includes(q) ||
+    p.proveedor.toLowerCase().includes(q) ||
+    p.clientes.toLowerCase().includes(q)
+  );
+}
 
-function renderCatalogo() {
-  let f = PRODUCTS.filter(p => {
-    if (filter !== 'all' && ftype(p) !== filter) return false;
-    if (!q) return true;
-    const s = q.toLowerCase();
-    return p.articulo.toLowerCase().includes(s) || p.codigo.toLowerCase().includes(s) ||
-           p.proveedor.toLowerCase().includes(s) || p.clientes.toLowerCase().includes(s);
-  }).sort((a,b) => {
-    if (sort==='name') return a.articulo.localeCompare(b.articulo,'es');
-    if (sort==='price') return (b.precio||0)-(a.precio||0);
-    if (sort==='date') { const da=a.ultimaVenta?a.ultimaVenta.split('/').reverse().join(''):''; const db=b.ultimaVenta?b.ultimaVenta.split('/').reverse().join(''):''; return db.localeCompare(da); }
+function sortProducts(arr) {
+  return [...arr].sort((a, b) => {
+    if (currentSort === 'name') return a.articulo.localeCompare(b.articulo, 'es');
+    if (currentSort === 'price') return (b.precio || 0) - (a.precio || 0);
+    if (currentSort === 'date') {
+      const pa = a.ultimaVenta ? a.ultimaVenta.split('/').reverse().join('') : '';
+      const pb = b.ultimaVenta ? b.ultimaVenta.split('/').reverse().join('') : '';
+      return pb.localeCompare(pa);
+    }
     return 0;
   });
-  document.getElementById('hcount').textContent = PRODUCTS.length + ' productos';
-  document.getElementById('rcount').textContent = f.length + ' resultado' + (f.length!==1?'s':'');
+}
+
+function formatPrice(p) {
+  if (!p.precio) return '—';
+  const sym = p.moneda === 'ARS' ? '$' : 'USD';
+  return `${sym} ${p.precio.toLocaleString('es-AR', {minimumFractionDigits: 0, maximumFractionDigits: 0})}`;
+}
+
+function render() {
+  const filtered = sortProducts(PRODUCTS.filter(p => matchesFilter(p) && matchesSearch(p)));
+  document.getElementById('result-count').textContent = `${filtered.length} resultado${filtered.length !== 1 ? 's' : ''}`;
+  document.getElementById('header-count').textContent = `${PRODUCTS.length} productos`;
+
   const list = document.getElementById('list');
-  if (!f.length) { list.innerHTML='<div class="empty"><div class="emoji">🔍</div><p>No se encontraron productos</p></div>'; return; }
-  list.innerHTML = f.map(p => {
-    const clis = p.clientes ? p.clientes.split(',').map(s=>s.trim()).filter(Boolean) : [];
-    const cliLabel = clis.length===0?'':clis.length===1?clis[0]:clis[0]+' +'+(clis.length-1);
-    const prov = p.proveedor; const provShort = prov.length>20?prov.slice(0,18)+'…':prov;
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty"><div class="emoji">🔍</div><p>No se encontraron productos</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((p, i) => {
+    const tipo = getFilterType(p);
+    const clsMap = { INTERNO: 'badge-interno', ORIGINAL: 'badge-original', SIN_CODIGO: 'badge-sin_codigo', COVEMA: 'badge-sin_codigo' };
+    const labelMap = { INTERNO: 'CF', ORIGINAL: p.codigo || '', SIN_CODIGO: 'Sin cód.', COVEMA: 'COVEMA' };
     return `<div class="card" onclick="openModal(${PRODUCTS.indexOf(p)})">
       <div class="card-main">
         <div class="card-top">
           <div class="card-name">${p.articulo}</div>
-          <div class="card-price"><span class="cur">${p.moneda||'USD'} </span>${p.precio?p.precio.toLocaleString('es-AR',{minimumFractionDigits:0}):'—'}</div>
+          <div class="card-price"><span class="currency">${p.moneda || 'USD'} </span>${p.precio ? p.precio.toLocaleString('es-AR', {minimumFractionDigits: 0}) : '—'}</div>
         </div>
         <div class="card-meta">
-          ${cliLabel?`<span class="badge badge-cli">👤 ${cliLabel}</span>`:''}
-          ${prov?`<span class="badge badge-prov">🏭 ${provShort}</span>`:''}
+          <span class="badge ${clsMap[tipo]}">${labelMap[tipo]}</span>
+          ${p.codigo && tipo !== 'SIN_CODIGO' && tipo !== 'COVEMA' ? `<span class="card-code">${p.codigo}</span>` : ''}
+          ${p.proveedor ? `<span class="badge badge-proveedor">${p.proveedor.length > 22 ? p.proveedor.slice(0,20)+'…' : p.proveedor}</span>` : ''}
         </div>
       </div>
-      ${p.notas?`<div class="card-nota">⚠️ ${p.notas.slice(0,120)}${p.notas.length>120?'…':''}</div>`:''}
+      ${p.notas ? `<div class="card-nota">${p.notas.slice(0, 120)}${p.notas.length > 120 ? '…' : ''}</div>` : ''}
     </div>`;
   }).join('');
-}
-
-document.getElementById('search').addEventListener('input', e => { q=e.target.value.trim(); renderCatalogo(); });
-document.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
-  document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));
-  c.classList.add('active'); filter=c.dataset.filter; renderCatalogo();
-}));
-function setSort(s) {
-  sort=s;
-  document.querySelectorAll('.sort-btn button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sort-'+s).classList.add('active');
-  renderCatalogo();
 }
 
 function openModal(idx) {
   const p = PRODUCTS[idx];
-  const t = ftype(p);
-  const codLabel = {INTERNO:'Código interno (Colfer)',ORIGINAL:'Código original',SIN_CODIGO:'Sin código',COVEMA:'Código COVEMA'};
-  const clis = p.clientes?p.clientes.split(',').map(s=>s.trim()).filter(Boolean):[];
-  document.getElementById('mtitle').textContent = p.articulo;
-  document.getElementById('mbadges').innerHTML =
-    `${clis.length?`<span class="badge badge-cli">👤 ${clis.join(', ')}</span>`:''}
-     ${p.proveedor?`<span class="badge badge-prov">🏭 ${p.proveedor}</span>`:''}`;
+  const tipo = getFilterType(p);
+  const clsMap = { INTERNO: 'badge-interno', ORIGINAL: 'badge-original', SIN_CODIGO: 'badge-sin_codigo', COVEMA: 'badge-sin_codigo' };
+  const labelMap = { INTERNO: 'Código Interno', ORIGINAL: 'Cód. Original', SIN_CODIGO: 'Sin código', COVEMA: 'COVEMA' };
+
+  document.getElementById('modal-title').textContent = p.articulo;
+  document.getElementById('modal-badges').innerHTML =
+    `<span class="badge ${clsMap[tipo]}">${labelMap[tipo]}</span>
+     ${p.proveedor ? `<span class="badge badge-proveedor">${p.proveedor}</span>` : ''}`;
+
   const rows = [
-    [codLabel[t]||'Código', p.codigo||'Sin código'],
-    ['Precio de venta', p.precio?`${p.moneda||'USD'} ${p.precio.toLocaleString('es-AR',{minimumFractionDigits:2})}`:'—','hl'],
-    p.costo?['Costo (compra)', `${p.moneda} ${p.costo.toLocaleString('es-AR',{minimumFractionDigits:2})}`]:null,
-    p.margen?['Margen', parseFloat(p.margen).toFixed(2)+'%','gn']:null,
-    p.proveedor?['Proveedor', p.proveedor]:null,
-    clis.length?['Cliente/s', clis.join(', ')]:null,
-    p.ultimaVenta?['Última venta', p.ultimaVenta]:null,
+    p.codigo ? ['Código', p.codigo] : null,
+    ['Precio de venta', p.precio ? `${p.moneda || 'USD'} ${p.precio.toLocaleString('es-AR', {minimumFractionDigits: 2})}` : '—', 'highlight'],
+    p.costo ? ['Costo', `${p.monedaCosto || p.moneda} ${p.costo.toLocaleString('es-AR', {minimumFractionDigits: 2})}`] : null,
+    p.margen !== null && p.margen !== undefined ? ['Margen', `${p.margen}%`, 'green'] : null,
+    p.proveedor ? ['Proveedor', p.proveedor] : null,
+    p.clientes ? ['Clientes', p.clientes] : null,
+    p.ultimaVenta ? ['Última venta', p.ultimaVenta] : null,
   ].filter(Boolean);
-  document.getElementById('mbody').innerHTML = rows.map(([l,v,c])=>
-    `<div class="detail-row"><span class="detail-label">${l}</span><span class="detail-value ${c||''}">${v}</span></div>`
-  ).join('') + (p.notas?`<div class="modal-nota"><strong>⚠️ Distintos precios registrados</strong>${p.notas.replace('Precios distintos: ','')}</div>`:'');
+
+  document.getElementById('modal-body').innerHTML =
+    rows.map(([label, value, cls]) =>
+      `<div class="detail-row">
+        <span class="detail-label">${label}</span>
+        <span class="detail-value ${cls || ''}">${value}</span>
+      </div>`
+    ).join('') +
+    (p.notas ? `<div class="modal-nota"><strong>⚠️ Distintos precios registrados</strong>${p.notas.replace('Precios distintos: ', '')}</div>` : '');
+
   document.getElementById('overlay').classList.add('open');
-  document.getElementById('modal').scrollTop=0;
-}
-function closeModal(e) { if(e.target===document.getElementById('overlay')) document.getElementById('overlay').classList.remove('open'); }
-let startY=0;
-document.getElementById('modal').addEventListener('touchstart',e=>{startY=e.touches[0].clientY;});
-document.getElementById('modal').addEventListener('touchend',e=>{if(e.changedTouches[0].clientY-startY>80)document.getElementById('overlay').classList.remove('open');});
-
-function showTab(name) {
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('tab-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
-  if (name==='dashboard' && !dashLoaded) loadDashboard();
-  if (name==='clientes' && !cliLoaded) loadClientes();
-  if (name==='proveedores' && !provLoaded) loadProveedores();
+  document.getElementById('modal').scrollTop = 0;
 }
 
-// ── DASHBOARD ──
-async function loadDashboard() {
-  try {
-    const res = await fetch(`${API}?key=${KEY}&action=getStats`);
-    const d = await res.json();
-    if (d.error) throw new Error(d.error);
-    dashLoaded = true;
-    if (d.porClienteAll) { STATS_CLI = {}; d.porClienteAll.forEach(c => { STATS_CLI[c.cliente.toUpperCase()] = c; }); }
-    renderDashboard(d);
-  } catch(e) {
-    document.getElementById('dash-content').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>No se pudo cargar el dashboard</p></div>';
+function closeModal(e) {
+  if (e.target === document.getElementById('overlay')) {
+    document.getElementById('overlay').classList.remove('open');
   }
 }
 
-function fmt(n) {
-  if (n >= 1e9) return '$' + (n/1e9).toFixed(2) + 'B';
-  if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
-  return '$' + Math.round(n).toLocaleString('es-AR');
+function setSort(s) {
+  currentSort = s;
+  document.querySelectorAll('.sort-btn button').forEach(b => b.classList.remove('active'));
+  document.getElementById('sort-' + s).classList.add('active');
+  render();
 }
 
-function renderDashboard(d) {
-  document.getElementById('dash-content').innerHTML = `
-    <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Total s/IVA</div><div class="kpi-value">${fmt(d.totalBruto)}</div><div class="kpi-sub">Facturación bruta</div></div>
-      <div class="kpi"><div class="kpi-label">Total c/IVA</div><div class="kpi-value green">${fmt(d.totalConIva)}</div><div class="kpi-sub">Con IVA 21%</div></div>
-      <div class="kpi"><div class="kpi-label">Facturas</div><div class="kpi-value">${d.cantFacturas}</div><div class="kpi-sub">Emitidas</div></div>
-      <div class="kpi"><div class="kpi-label">Promedio</div><div class="kpi-value">${fmt(d.totalBruto/d.cantFacturas)}</div><div class="kpi-sub">Por factura</div></div>
-    </div>
-    <div class="chart-section">
-      <div class="chart-title">Facturas por cliente</div>
-      <div style="position:relative;height:260px"><canvas id="chartFactCli"></canvas></div>
-    </div>
-    <div class="chart-section">
-      <div class="chart-title">Top clientes</div>
-      <div class="chart-wrap-tall"><canvas id="chartCli"></canvas></div>
-    </div>
-    <div class="chart-section" style="margin-bottom:14px">
-      <div class="chart-title">Ventas por categoría</div>
-      <div class="chart-wrap-tall"><canvas id="chartCat"></canvas></div>
-    </div>`;
+document.getElementById('search').addEventListener('input', e => {
+  searchTerm = e.target.value.trim();
+  render();
+});
 
-  const BLUES = ['#1F4E79','#2e6fad','#4a9ed6','#7dc3e8','#b0daf5','#d6eefc'];
-  const GREENS = ['#1E5C3A','#2e8b57','#3cb371','#66cdaa','#98d8b0','#c5ecd5','#e2f7eb','#f0fbf4','#a8d8b9','#7bc4a0','#52a87d','#3d7a5c','#2a5a3f','#1a3d28'];
-
-  new Chart(document.getElementById('chartFactCli'), {
-    type:'bar', data:{labels:d.topClientes.map(c=>c.cliente.split(' ')[0]),datasets:[{label:'Facturas',data:d.topClientes.map(c=>c.facturas),backgroundColor:BLUES,borderRadius:6}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' facturas'}}},scales:{x:{ticks:{stepSize:1,font:{size:11}},grid:{color:'#f0f0f0'}},y:{ticks:{font:{size:11}},grid:{display:false}}}}
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    currentFilter = chip.dataset.filter;
+    render();
   });
-  new Chart(document.getElementById('chartCli'), {
-    type:'bar', data:{labels:d.topClientes.map(c=>c.cliente.split(' ')[0]),datasets:[{data:d.topClientes.map(c=>c.bruto),backgroundColor:BLUES,borderRadius:6}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)},grid:{color:'#f0f0f0'}},y:{grid:{display:false}}}}
-  });
-  new Chart(document.getElementById('chartCat'), {
-    type:'doughnut', data:{labels:d.porCategoria.map(c=>c.categoria),datasets:[{data:d.porCategoria.map(c=>c.total),backgroundColor:GREENS,borderWidth:2,borderColor:'#fff'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}}}
-  });
-}
+});
 
-// ── CLIENTES ──
-let cliQ = '';
-async function loadClientes() {
-  document.getElementById('cli-hcount').textContent = 'Cargando...';
-  document.getElementById('cli-list-container').innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando clientes...</p></div>';
-  try {
-    const [resCli, resStats] = await Promise.all([
-      fetch(`${API}?key=${KEY}&action=getClientes`),
-      dashLoaded ? Promise.resolve(null) : fetch(`${API}?key=${KEY}&action=getStats`),
-    ]);
-    CLIENTES = await resCli.json();
-    if (CLIENTES.error) throw new Error(CLIENTES.error);
-    if (resStats) {
-      const stats = await resStats.json();
-      if (!stats.error && stats.porClienteAll) {
-        STATS_CLI = {};
-        stats.porClienteAll.forEach(c => { STATS_CLI[c.cliente.toUpperCase()] = c; });
-        dashLoaded = true;
-      }
-    }
-    cliLoaded = true;
-    document.getElementById('cli-hcount').textContent = CLIENTES.length + ' clientes';
-    renderClientes();
-  } catch(e) {
-    document.getElementById('cli-list-container').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>No se pudo cargar</p></div>';
-  }
-}
+// Swipe down to close modal
+let startY = 0;
+document.getElementById('modal').addEventListener('touchstart', e => { startY = e.touches[0].clientY; });
+document.getElementById('modal').addEventListener('touchend', e => {
+  if (e.changedTouches[0].clientY - startY > 80) document.getElementById('overlay').classList.remove('open');
+});
 
-function renderClientes() {
-  const filtered = CLIENTES.filter(c => {
-    if (!cliQ) return true;
-    const s = cliQ.toLowerCase();
-    return (c.NOMBRE||'').toLowerCase().includes(s) || (c.LOCALIDAD||'').toLowerCase().includes(s) || (c.CUIT||'').includes(s);
-  });
-  const container = document.getElementById('cli-list-container');
-  if (!filtered.length) { container.innerHTML='<div class="empty"><div class="emoji">🔍</div><p>No se encontraron clientes</p></div>'; return; }
-  container.innerHTML = filtered.map(c => {
-    const nombre = c.NOMBRE || 'Sin nombre';
-    const inicial = nombre.charAt(0).toUpperCase();
-    const loc = [c.LOCALIDAD, c.PROVINCIA].filter(Boolean).join(', ');
-    const stats = findClientStats(nombre);
-    const badge = stats ? fmt(stats.bruto) : '';
-    return `<div class="cli-card" onclick="openClientDetail('${nombre.replace(/'/g,"\\'")}')">
-      <div class="cli-avatar">${inicial}</div>
-      <div class="cli-card-info">
-        <div class="cli-card-name">${nombre}</div>
-        ${loc?`<div class="cli-card-loc">📍 ${loc}</div>`:''}
-      </div>
-      ${badge?`<div class="cli-card-badge">${badge}</div>`:''}
-    </div>`;
-  }).join('');
-}
-
-document.getElementById('cli-search').addEventListener('input', e => { cliQ=e.target.value.trim(); renderClientes(); });
-
-function openClientDetail(nombre) {
-  const c = CLIENTES.find(x => x.NOMBRE === nombre);
-  if (!c) return;
-  currentClient = c;
-  const stats = findClientStats(nombre);
-  document.getElementById('cd-name').textContent = c.NOMBRE || '';
-  document.getElementById('cd-cuit').textContent = c.CUIT ? 'CUIT: ' + c.CUIT : 'Sin CUIT registrado';
-  const setVal = (id, val) => {
-    const el = document.getElementById(id);
-    if (val) { el.textContent = val; el.classList.remove('empty-val'); }
-    else { el.textContent = 'Sin datos'; el.classList.add('empty-val'); }
-  };
-  setVal('cd-dir', c.DIRECCION);
-  setVal('cd-loc', [c.LOCALIDAD, c.PROVINCIA].filter(Boolean).join(', '));
-  setVal('cd-tel', c.TEL);
-  setVal('cd-contacto', c.CONTACTO);
-  setVal('cd-tel-contacto', c.TEL_CONTACTO);
-  document.getElementById('cd-facturas').textContent = stats ? stats.facturas + ' facturas emitidas' : 'Sin registros';
-  document.getElementById('cli-detail').style.display = 'block';
-  document.getElementById('cli-detail').scrollTop = 0;
-}
-
-function closeClientDetail() { document.getElementById('cli-detail').style.display='none'; currentClient=null; }
-
-function openClientEdit() {
-  if (!currentClient) return;
-  const c = currentClient;
-  document.getElementById('e-cuit').value = c.CUIT || '';
-  document.getElementById('e-dir').value = c.DIRECCION || '';
-  document.getElementById('e-loc').value = c.LOCALIDAD || '';
-  document.getElementById('e-prov').value = c.PROVINCIA || '';
-  document.getElementById('e-tel').value = c.TEL || '';
-  document.getElementById('e-contacto').value = c.CONTACTO || '';
-  document.getElementById('e-tel-contacto').value = c.TEL_CONTACTO || '';
-  document.getElementById('cli-edit-overlay').classList.add('open');
-}
-
-function closeClientEdit(e) {
-  if (!e || e.target === document.getElementById('cli-edit-overlay'))
-    document.getElementById('cli-edit-overlay').classList.remove('open');
-}
-
-async function submitClientEdit() {
-  if (!currentClient) return;
-  const btn = document.getElementById('e-btn');
-  btn.disabled=true; btn.textContent='Guardando...';
-  try {
-    const params = new URLSearchParams({
-      key:KEY, action:'updateCliente', nombre:currentClient.NOMBRE,
-      cuit: document.getElementById('e-cuit').value.trim(),
-      direccion: document.getElementById('e-dir').value.trim(),
-      localidad: document.getElementById('e-loc').value.trim(),
-      provincia: document.getElementById('e-prov').value.trim(),
-      tel: document.getElementById('e-tel').value.trim(),
-      contacto: document.getElementById('e-contacto').value.trim(),
-      tel_contacto: document.getElementById('e-tel-contacto').value.trim(),
-    });
-    const res = await fetch(`${API}?${params}`);
-    const d = await res.json();
-    if (d.error) throw new Error(d.error);
-    currentClient.CUIT = document.getElementById('e-cuit').value.trim();
-    currentClient.DIRECCION = document.getElementById('e-dir').value.trim();
-    currentClient.LOCALIDAD = document.getElementById('e-loc').value.trim();
-    currentClient.PROVINCIA = document.getElementById('e-prov').value.trim();
-    currentClient.TEL = document.getElementById('e-tel').value.trim();
-    currentClient.CONTACTO = document.getElementById('e-contacto').value.trim();
-    currentClient.TEL_CONTACTO = document.getElementById('e-tel-contacto').value.trim();
-    document.getElementById('e-ok').style.display='block';
-    setTimeout(()=>{ document.getElementById('e-ok').style.display='none'; document.getElementById('cli-edit-overlay').classList.remove('open'); openClientDetail(currentClient.NOMBRE); }, 1500);
-  } catch(e) {
-    document.getElementById('e-err').textContent='Error: '+e.message;
-    document.getElementById('e-err').style.display='block';
-    setTimeout(()=>document.getElementById('e-err').style.display='none',4000);
-  }
-  btn.disabled=false; btn.textContent='Guardar cambios';
-}
-
-// ── PROVEEDORES ──
-let PROVEEDORES = [], PROD_PROV = [], provLoaded = false, provQ = '';
-let currentProv = null, currentProdIdx = null, prodEditMode = 'edit';
-
-async function loadProveedores() {
-  document.getElementById('prov-hcount').textContent = 'Cargando...';
-  document.getElementById('prov-list-container').innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando...</p></div>';
-  try {
-    const [rProv, rProd] = await Promise.all([
-      fetch(`${API}?key=${KEY}&action=getProveedores`),
-      fetch(`${API}?key=${KEY}&action=getProdProveedores`),
-    ]);
-    PROVEEDORES = await rProv.json();
-    PROD_PROV   = await rProd.json();
-    if (PROVEEDORES.error) throw new Error(PROVEEDORES.error);
-    provLoaded = true;
-    document.getElementById('prov-hcount').textContent = PROVEEDORES.length + ' proveedores';
-    renderProveedores();
-  } catch(e) {
-    document.getElementById('prov-list-container').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>No se pudo cargar</p></div>';
-  }
-}
-
-function renderProveedores() {
-  const filtered = PROVEEDORES.filter(p => {
-    if (!provQ) return true;
-    const s = provQ.toLowerCase();
-    return (p.NOMBRE||'').toLowerCase().includes(s) ||
-           (p.CONTACTO_PRINCIPAL||'').toLowerCase().includes(s) ||
-           PROD_PROV.filter(x=>x.PROVEEDOR===p.NOMBRE).some(x=>(x.PRODUCTO||'').toLowerCase().includes(s));
-  });
-  const container = document.getElementById('prov-list-container');
-  if (!filtered.length) { container.innerHTML='<div class="empty"><div class="emoji">🔍</div><p>Sin resultados</p></div>'; return; }
-  container.innerHTML = filtered.map(p => {
-    const prods = PROD_PROV.filter(x => x.PROVEEDOR === p.NOMBRE);
-    const inicial = p.NOMBRE.charAt(0).toUpperCase();
-    return `<div class="cli-card" onclick="openProvDetail('${p.NOMBRE.replace(/'/g,"\\'")}')">
-      <div class="cli-avatar">${inicial}</div>
-      <div class="cli-card-info">
-        <div class="cli-card-name">${p.NOMBRE}</div>
-        <div class="cli-card-loc">👤 ${p.CONTACTO_PRINCIPAL || '—'}${p.TEL_PRINCIPAL?' · 📞 '+p.TEL_PRINCIPAL:''}</div>
-      </div>
-      <div class="cli-card-badge">${prods.length} prod.</div>
-    </div>`;
-  }).join('');
-}
-
-document.getElementById('prov-search').addEventListener('input', e => { provQ=e.target.value.trim(); renderProveedores(); });
-
-function openProvDetail(nombre) {
-  const p = PROVEEDORES.find(x => x.NOMBRE === nombre);
-  if (!p) return;
-  currentProv = p;
-
-  document.getElementById('pd-name').textContent = p.NOMBRE;
-  document.getElementById('pd-pago').textContent = p.FORMA_PAGO ? '💳 ' + p.FORMA_PAGO : '';
-
-  const setV = (id, val) => {
-    const el = document.getElementById(id);
-    if (val) { el.textContent = val; el.classList.remove('empty-val'); }
-    else { el.textContent = 'Sin datos'; el.classList.add('empty-val'); }
-  };
-  setV('pd-contacto', p.CONTACTO_PRINCIPAL);
-  setV('pd-tel', p.TEL_PRINCIPAL);
-
-  const altRow = document.getElementById('pd-alt-row');
-  if (p.CONTACTOS_ALT) {
-    const alts = p.CONTACTOS_ALT.split(';').map(s=>s.trim()).filter(Boolean)
-      .map(s => { const [n,t] = s.split('|'); return t ? `${n} (${t})` : n; }).join(' · ');
-    setV('pd-alt', alts);
-    altRow.style.display = 'flex';
-  } else {
-    altRow.style.display = 'none';
-  }
-
-  renderProdProveedor(nombre);
-  document.getElementById('prov-detail').style.display = 'block';
-  document.getElementById('prov-detail').scrollTop = 0;
-}
-
-function renderProdProveedor(nombre) {
-  const prods = PROD_PROV.filter(x => x.PROVEEDOR === nombre);
-  const container = document.getElementById('pd-productos');
-  if (!prods.length) { container.innerHTML = '<p style="color:var(--sub);font-size:0.85rem;padding:8px 0">Sin productos cargados</p>'; return; }
-  container.innerHTML = prods.map((p, i) => {
-    const precio = p.PRECIO_VENTA || p.PRECIO_COMPRA || '';
-    const equipo = p.EQUIPO;
-    const fecha = p.FECHA;
-    return `<div class="prov-prod-card" onclick="openProdEdit(${PROD_PROV.indexOf(p)})">
-      <div class="prov-prod-top">
-        <div class="prov-prod-name">${p.PRODUCTO}</div>
-        ${precio?`<div class="prov-prod-price">${precio}</div>`:''}
-      </div>
-      <div class="prov-prod-meta">
-        ${equipo?`<span class="prov-prod-tag">⚙️ ${equipo}</span>`:''}
-        ${fecha?`<span class="prov-prod-date">📅 ${fmtMes(fecha)}</span>`:''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
-function closeProvDetail() { document.getElementById('prov-detail').style.display='none'; currentProv=null; }
-
-function openProvEdit() {
-  if (!currentProv) return;
-  document.getElementById('pe-contacto').value = currentProv.CONTACTO_PRINCIPAL || '';
-  document.getElementById('pe-tel').value = currentProv.TEL_PRINCIPAL || '';
-  document.getElementById('pe-alt').value = currentProv.CONTACTOS_ALT || '';
-  document.getElementById('pe-pago').value = currentProv.FORMA_PAGO || '';
-  document.getElementById('prov-edit-overlay').classList.add('open');
-}
-function closeProvEdit(e) { if(!e||e.target===document.getElementById('prov-edit-overlay')) document.getElementById('prov-edit-overlay').classList.remove('open'); }
-
-async function submitProvEdit() {
-  if (!currentProv) return;
-  const btn = document.getElementById('pe-btn');
-  btn.disabled=true; btn.textContent='Guardando...';
-  try {
-    const params = new URLSearchParams({
-      key:KEY, action:'updateProveedor', nombre:currentProv.NOMBRE,
-      contacto_principal: document.getElementById('pe-contacto').value.trim(),
-      tel_principal: document.getElementById('pe-tel').value.trim(),
-      contactos_alt: document.getElementById('pe-alt').value.trim(),
-      forma_pago: document.getElementById('pe-pago').value.trim(),
-    });
-    const d = await (await fetch(`${API}?${params}`)).json();
-    if (d.error) throw new Error(d.error);
-    currentProv.CONTACTO_PRINCIPAL = document.getElementById('pe-contacto').value.trim();
-    currentProv.TEL_PRINCIPAL = document.getElementById('pe-tel').value.trim();
-    currentProv.CONTACTOS_ALT = document.getElementById('pe-alt').value.trim();
-    currentProv.FORMA_PAGO = document.getElementById('pe-pago').value.trim();
-    document.getElementById('pe-ok').style.display='block';
-    setTimeout(()=>{ document.getElementById('pe-ok').style.display='none'; document.getElementById('prov-edit-overlay').classList.remove('open'); openProvDetail(currentProv.NOMBRE); },1500);
-  } catch(e) { document.getElementById('pe-err').textContent='Error: '+e.message; document.getElementById('pe-err').style.display='block'; setTimeout(()=>document.getElementById('pe-err').style.display='none',4000); }
-  btn.disabled=false; btn.textContent='Guardar cambios';
-}
-
-function openProdEdit(idx) {
-  prodEditMode = 'edit';
-  currentProdIdx = idx;
-  const p = PROD_PROV[idx];
-  document.getElementById('pp-title').textContent = 'Editar producto';
-  document.getElementById('pp-producto').value = p.PRODUCTO || '';
-  document.getElementById('pp-producto').readOnly = true;
-  document.getElementById('pp-equipo').value = p.EQUIPO || '';
-  document.getElementById('pp-compra').value = p.PRECIO_COMPRA || '';
-  document.getElementById('pp-venta').value = p.PRECIO_VENTA || '';
-  document.getElementById('prov-prod-overlay').classList.add('open');
-}
-
-function openProdAdd() {
-  prodEditMode = 'add';
-  currentProdIdx = null;
-  document.getElementById('pp-title').textContent = 'Agregar producto';
-  document.getElementById('pp-producto').value = '';
-  document.getElementById('pp-producto').readOnly = false;
-  document.getElementById('pp-equipo').value = '';
-  document.getElementById('pp-compra').value = '';
-  document.getElementById('pp-venta').value = '';
-  document.getElementById('prov-prod-overlay').classList.add('open');
-}
-
-function closeProdEdit(e) { if(!e||e.target===document.getElementById('prov-prod-overlay')) document.getElementById('prov-prod-overlay').classList.remove('open'); }
-
-async function submitProdEdit() {
-  if (!currentProv) return;
-  const btn = document.getElementById('pp-btn');
-  btn.disabled=true; btn.textContent='Guardando...';
-  try {
-    const producto = document.getElementById('pp-producto').value.trim();
-    const equipo   = document.getElementById('pp-equipo').value.trim();
-    const compra   = document.getElementById('pp-compra').value.trim();
-    const venta    = document.getElementById('pp-venta').value.trim();
-    if (!producto) { document.getElementById('pp-err').textContent='El nombre es obligatorio'; document.getElementById('pp-err').style.display='block'; btn.disabled=false; btn.textContent='Guardar'; return; }
-
-    let params;
-    if (prodEditMode === 'add') {
-      params = new URLSearchParams({ key:KEY, action:'addProdProveedor', proveedor:currentProv.NOMBRE, producto, equipo, precio_compra:compra, precio_venta:venta });
-    } else {
-      const orig = PROD_PROV[currentProdIdx];
-      params = new URLSearchParams({ key:KEY, action:'updateProdProveedor', proveedor:currentProv.NOMBRE, producto:orig.PRODUCTO, equipo, precio_compra:compra, precio_venta:venta });
-    }
-    const d = await (await fetch(`${API}?${params}`)).json();
-    if (d.error) throw new Error(d.error);
-
-    if (prodEditMode === 'add') {
-      PROD_PROV.push({PROVEEDOR:currentProv.NOMBRE, PRODUCTO:producto, EQUIPO:equipo, PRECIO_COMPRA:compra, PRECIO_VENTA:venta, FECHA:new Date().toLocaleDateString('es-AR')});
-    } else {
-      const orig = PROD_PROV[currentProdIdx];
-      orig.EQUIPO = equipo; orig.PRECIO_COMPRA = compra; orig.PRECIO_VENTA = venta;
-    }
-    document.getElementById('pp-ok').style.display='block';
-    setTimeout(()=>{ document.getElementById('pp-ok').style.display='none'; document.getElementById('prov-prod-overlay').classList.remove('open'); renderProdProveedor(currentProv.NOMBRE); },1200);
-  } catch(e) { document.getElementById('pp-err').textContent='Error: '+e.message; document.getElementById('pp-err').style.display='block'; setTimeout(()=>document.getElementById('pp-err').style.display='none',4000); }
-  btn.disabled=false; btn.textContent='Guardar';
-}
-
-// ── AGREGAR ──
-function switchAddTab(t) {
-  document.querySelectorAll('.add-tab').forEach(b=>b.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('form-producto').style.display = t==='producto'?'block':'none';
-  document.getElementById('form-venta').style.display = t==='venta'?'block':'none';
-}
-function toggleCodigo() {
-  document.getElementById('codigo-manual-wrap').style.display = document.getElementById('p-interno').checked?'none':'block';
-}
-function setupAutocomplete() {
-  const arts = PRODUCTS.map(p=>p.articulo);
-  const provs = [...new Set(PRODUCTS.map(p=>p.proveedor).filter(Boolean))].sort();
-  const clis = [...new Set(PRODUCTS.flatMap(p=>p.clientes?p.clientes.split(',').map(s=>s.trim()):[])).values()].filter(Boolean).sort();
-  const dl = id => document.getElementById(id);
-  if(dl('art-list')) dl('art-list').innerHTML = arts.map(a=>`<option value="${a}">`).join('');
-  if(dl('prov-list')) dl('prov-list').innerHTML = provs.map(p=>`<option value="${p}">`).join('');
-  ['cli-list','cli-list2'].forEach(id => { if(dl(id)) dl(id).innerHTML = clis.map(c=>`<option value="${c}">`).join(''); });
-}
-
-async function submitProducto() {
-  const btn = document.querySelector('#form-producto .btn-submit');
-  const articulo = document.getElementById('p-articulo').value.trim();
-  const proveedor = document.getElementById('p-proveedor').value.trim();
-  const precio = document.getElementById('p-precio').value.trim();
-  if (!articulo || !proveedor || !precio) { showMsg('p-err','Completá artículo, proveedor y precio'); return; }
-  btn.disabled=true; btn.textContent='Guardando...';
-  try {
-    const params = new URLSearchParams({ key:KEY, action:'addProducto',
-      tipo: document.getElementById('p-interno').checked?'INTERNO':'ORIGINAL',
-      articulo, proveedor, codigo: document.getElementById('p-codigo').value.trim(),
-      moneda: document.getElementById('p-moneda').value, precio,
-      costo: document.getElementById('p-costo').value.trim(), cliente: document.getElementById('p-cliente').value.trim(),
-    });
-    const d = await (await fetch(`${API}?${params}`)).json();
-    if (d.error) throw new Error(d.error);
-    showMsg('p-ok', `✅ Producto guardado${d.codigo?' con código '+d.codigo:''}`);
-    document.querySelectorAll('#form-producto input').forEach(i=>i.value='');
-    document.getElementById('p-interno').checked=true; toggleCodigo();
-    recargarCatalogo();
-  } catch(e) { showMsg('p-err','Error: '+e.message); }
-  btn.disabled=false; btn.textContent='Guardar producto';
-}
-
-async function submitVenta() {
-  const btn = document.querySelector('#form-venta .btn-submit');
-  const articulo = document.getElementById('v-articulo').value.trim();
-  const cliente = document.getElementById('v-cliente').value.trim();
-  const precio = document.getElementById('v-precio').value.trim();
-  if (!articulo || !cliente || !precio) { showMsg('v-err','Completá artículo, cliente y precio'); return; }
-  btn.disabled=true; btn.textContent='Registrando...';
-  try {
-    const prod = PRODUCTS.find(p=>p.articulo.toUpperCase()===articulo.toUpperCase());
-    const params = new URLSearchParams({ key:KEY, action:'addVenta',
-      articulo, cliente, codigo: prod?prod.codigo:'', proveedor: prod?prod.proveedor:'',
-      moneda: document.getElementById('v-moneda').value, precio,
-    });
-    const d = await (await fetch(`${API}?${params}`)).json();
-    if (d.error) throw new Error(d.error);
-    showMsg('v-ok','✅ Venta registrada correctamente');
-    document.querySelectorAll('#form-venta input').forEach(i=>i.value='');
-    recargarCatalogo();
-  } catch(e) { showMsg('v-err','Error: '+e.message); }
-  btn.disabled=false; btn.textContent='Registrar venta';
-}
-
-function openMenu() {
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  document.getElementById('nav-menu').classList.add('active');
-  const el = document.getElementById('menu-overlay');
-  el.style.display='flex';
-}
-function closeMenu(e) {
-  if (!e || e.target===document.getElementById('menu-overlay'))
-    document.getElementById('menu-overlay').style.display='none';
-}
-function menuGo(tab) {
-  document.getElementById('menu-overlay').style.display='none';
-  showTab(tab);
-}
-
-function showMsg(id, msg) {
-  ['p-ok','p-err','v-ok','v-err'].forEach(i=>{ const el=document.getElementById(i); if(el){el.style.display='none';el.textContent='';} });
-  const el = document.getElementById(id);
-  if (el) { el.textContent=msg; el.style.display='block'; setTimeout(()=>el.style.display='none',4000); }
-}
+render();
 </script>
 </body>
 </html>
