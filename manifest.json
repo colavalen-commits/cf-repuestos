@@ -1,0 +1,15 @@
+{
+  "name": "Colfer Repuestos",
+  "short_name": "Colfer",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#C41E23",
+  "icons": [
+    {
+      "src": "B2E6253A-4B29-4994-88E0-1B0EFDBAED39_1_105_c.jpeg",
+      "sizes": "any",
+      "type": "image/jpeg"
+    }
+  ]
+}
