@@ -485,6 +485,11 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
       <span class="cli-info-label">Contacto</span>
       <span class="cli-info-val" id="cd-contacto"></span>
     </div>
+    <div class="cli-info-row">
+      <span class="cli-info-icon">📱</span>
+      <span class="cli-info-label">Tel. contacto</span>
+      <span class="cli-info-val" id="cd-tel-contacto"></span>
+    </div>
   </div>
   <div class="cli-stats-card">
     <div class="cli-stats-title">Actividad</div>
@@ -634,6 +639,10 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
       <div class="form-group">
         <label>Contacto</label>
         <input type="text" id="e-contacto" placeholder="Nombre del contacto">
+      </div>
+      <div class="form-group">
+        <label>Tel. contacto</label>
+        <input type="tel" id="e-tel-contacto" placeholder="11 1234-5678">
       </div>
       <button class="btn-cli-save" id="e-btn" onclick="submitClientEdit()">Guardar cambios</button>
       <div class="form-success" id="e-ok">✅ Datos actualizados</div>
@@ -957,6 +966,7 @@ function openClientDetail(nombre) {
   setVal('cd-loc', [c.LOCALIDAD, c.PROVINCIA].filter(Boolean).join(', '));
   setVal('cd-tel', c.TEL);
   setVal('cd-contacto', c.CONTACTO);
+  setVal('cd-tel-contacto', c.TEL_CONTACTO);
   document.getElementById('cd-total').textContent = stats ? fmt(stats.bruto) : '—';
   document.getElementById('cd-facturas').textContent = stats ? stats.facturas : '—';
   document.getElementById('cli-detail').style.display = 'block';
@@ -974,6 +984,7 @@ function openClientEdit() {
   document.getElementById('e-prov').value = c.PROVINCIA || '';
   document.getElementById('e-tel').value = c.TEL || '';
   document.getElementById('e-contacto').value = c.CONTACTO || '';
+  document.getElementById('e-tel-contacto').value = c.TEL_CONTACTO || '';
   document.getElementById('cli-edit-overlay').classList.add('open');
 }
 
@@ -995,6 +1006,7 @@ async function submitClientEdit() {
       provincia: document.getElementById('e-prov').value.trim(),
       tel: document.getElementById('e-tel').value.trim(),
       contacto: document.getElementById('e-contacto').value.trim(),
+      tel_contacto: document.getElementById('e-tel-contacto').value.trim(),
     });
     const res = await fetch(`${API}?${params}`);
     const d = await res.json();
@@ -1005,6 +1017,7 @@ async function submitClientEdit() {
     currentClient.PROVINCIA = document.getElementById('e-prov').value.trim();
     currentClient.TEL = document.getElementById('e-tel').value.trim();
     currentClient.CONTACTO = document.getElementById('e-contacto').value.trim();
+    currentClient.TEL_CONTACTO = document.getElementById('e-tel-contacto').value.trim();
     document.getElementById('e-ok').style.display='block';
     setTimeout(()=>{ document.getElementById('e-ok').style.display='none'; document.getElementById('cli-edit-overlay').classList.remove('open'); openClientDetail(currentClient.NOMBRE); }, 1500);
   } catch(e) {
