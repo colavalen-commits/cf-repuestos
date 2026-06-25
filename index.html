@@ -465,7 +465,7 @@ function openModal(idx) {
     [codLabel[t]||'Código', p.codigo||'Sin código'],
     ['Precio de venta', p.precio?`${p.moneda||'USD'} ${p.precio.toLocaleString('es-AR',{minimumFractionDigits:2})}`:'—','hl'],
     p.costo?['Costo (compra)', `${p.moneda} ${p.costo.toLocaleString('es-AR',{minimumFractionDigits:2})}`]:null,
-    p.margen?['Margen', p.margen+'%','gn']:null,
+    p.margen?['Margen', parseFloat(p.margen).toFixed(2)+'%','gn']:null,
     p.proveedor?['Proveedor', p.proveedor]:null,
     clis.length?['Cliente/s', clis.join(', ')]:null,
     p.ultimaVenta?['Última venta', p.ultimaVenta]:null,
