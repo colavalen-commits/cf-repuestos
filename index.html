@@ -725,7 +725,7 @@ if (sessionStorage.getItem('cf_auth') === '1') {
   initApp();
 }
 
-function initApp() { recargarCatalogo(); }
+function initApp() { recargarCatalogo(); loadDashboard(); }
 
 async function recargarCatalogo() {
   document.getElementById('hcount').textContent = 'Sincronizando...';
