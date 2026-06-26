@@ -455,6 +455,9 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
         <button onclick="setCuentasFilter('TODAS')" id="btn-todas" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Todas</button>
         <button onclick="abrirFormFactura()" style="padding:7px 12px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--green);color:#fff;cursor:pointer">+ Nueva</button>
       </div>
+      <div style="margin-top:8px;position:relative">
+        <input id="ctas-search" oninput="renderCtasCtes()" placeholder="🔍 Buscar por nro. factura..." style="width:100%;box-sizing:border-box;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:0.88rem;font-family:inherit">
+      </div>
     </header>
     <div class="list" id="ctas-list" style="padding-top:10px"></div>
   </div>
@@ -495,12 +498,13 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
       <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 18px"></div>
       <div style="font-weight:700;font-size:1.05rem;margin-bottom:16px">Nueva Factura</div>
       <div style="display:flex;flex-direction:column;gap:10px">
-        <input id="nf-cliente" placeholder="Cliente *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-cliente" list="nf-clientes-list" placeholder="Cliente *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <datalist id="nf-clientes-list"></datalist>
         <input id="nf-nro" placeholder="Nro. Factura *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
-        <input id="nf-emision" type="date" placeholder="Fecha Emisión *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
-        <input id="nf-vencimiento" type="date" placeholder="Fecha Vencimiento *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
-        <input id="nf-neto" type="number" placeholder="Neto ARS *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
-        <input id="nf-iva" type="number" placeholder="IVA ARS" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-emision" type="date" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-vencimiento" type="date" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-neto" type="number" placeholder="Neto ARS *" oninput="calcularIvaTotal()" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-iva" type="number" placeholder="IVA ARS (21% auto)" oninput="calcularTotal()" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
         <input id="nf-total" type="number" placeholder="Total ARS *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
         <select id="nf-estado" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
           <option value="PENDIENTE">PENDIENTE</option>
@@ -1446,7 +1450,9 @@ function setCuentasFilter(f) {
 }
 
 function renderCtasCtes() {
-  const lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
+  const q = (document.getElementById('ctas-search')?.value || '').toLowerCase();
+  let lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
+  if (q) lista = lista.filter(f => (f.NRO_FACTURA||'').toLowerCase().includes(q));
   const pendientes = CTAS_CTES.filter(f => f.ESTADO === 'PENDIENTE');
   const totalPend = pendientes.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
   document.getElementById('ctas-hcount').textContent = `${pendientes.length} pendientes · ARS ${fmt(totalPend)}`;
@@ -1589,7 +1595,27 @@ function limpiarNotificaciones() {
   document.getElementById('notif-list').innerHTML = '<div style="text-align:center;color:var(--sub);padding:32px 0;font-size:0.9rem">Sin notificaciones</div>';
 }
 
+function calcularIvaTotal() {
+  const neto = parseFloat(document.getElementById('nf-neto').value) || 0;
+  const iva = Math.round(neto * 0.21);
+  document.getElementById('nf-iva').value = iva || '';
+  document.getElementById('nf-total').value = (neto + iva) || '';
+}
+function calcularTotal() {
+  const neto = parseFloat(document.getElementById('nf-neto').value) || 0;
+  const iva = parseFloat(document.getElementById('nf-iva').value) || 0;
+  document.getElementById('nf-total').value = (neto + iva) || '';
+}
+
 function abrirFormFactura() {
+  // Poblar clientes
+  const clientes = [...new Set(CTAS_CTES.map(f => f.CLIENTE).filter(Boolean))].sort();
+  const dl = document.getElementById('nf-clientes-list');
+  dl.innerHTML = clientes.map(c => `<option value="${c}">`).join('');
+  // Sugerir próximo nro de factura
+  const nros = CTAS_CTES.map(f => parseInt((/(\d+)$/.exec(f.NRO_FACTURA||'') || [0,0])[1])).filter(n => n > 0);
+  const nextNro = nros.length ? Math.max(...nros) + 1 : 1;
+  document.getElementById('nf-nro').value = nextNro;
   document.getElementById('overlay-factura').style.display = 'flex';
   lockBody();
 }
