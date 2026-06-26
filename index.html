@@ -1478,10 +1478,6 @@ function renderCtasCtes() {
     return;
   }
 
-  const hoy = new Date(); hoy.setHours(0,0,0,0);
-  const en5dias = new Date(hoy); en5dias.setDate(en5dias.getDate() + 5);
-  const isoHoy = hoy.toISOString().slice(0,10);
-  const isoEn5 = en5dias.toISOString().slice(0,10);
 
   // Agrupar por cliente
   const porCliente = {};
@@ -1502,17 +1498,11 @@ function renderCtasCtes() {
     facturas.sort((a,b) => nroNum(a.NRO_FACTURA) - nroNum(b.NRO_FACTURA)).forEach(f => {
       const pagada = f.ESTADO === 'PAGADA';
       const fv = f.FECHA_VENCIMIENTO || '';
-      const vencida = !pagada && fv && fv < isoHoy;
-      const proxima = !pagada && !vencida && fv && fv >= isoHoy && fv <= isoEn5;
       const clickAttr = !pagada ? `onclick="abrirDetalleFactura('${f.NRO_FACTURA}')"` : '';
-      const borderLeft = vencida ? 'border-left:3px solid var(--red);padding-left:8px;'
-                       : proxima ? 'border-left:3px solid #e67e22;padding-left:8px;' : '';
-      const colorFecha = vencida ? 'var(--red)' : proxima ? '#e67e22' : 'var(--sub)';
-      const labelExtra = proxima ? ' ⚠️ próxima' : '';
-      html += `<div ${clickAttr} style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);${borderLeft}${!pagada?'cursor:pointer':''}">
+      html += `<div ${clickAttr} style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);${!pagada?'cursor:pointer':''}">
         <div style="min-width:0">
           <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.NRO_FACTURA}</div>
-          <div style="font-size:0.77rem;color:${colorFecha}">Vence: ${fmtMes(fv)}${labelExtra}</div>
+          <div style="font-size:0.77rem;color:var(--sub)">Vence: ${fmtMes(fv)}</div>
         </div>
         <div style="text-align:right;white-space:nowrap;flex-shrink:0">
           <div style="font-size:0.88rem;font-weight:700">ARS ${fmt(parseFloat(f.TOTAL)||0)}</div>
