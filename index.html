@@ -944,8 +944,8 @@ function renderDashboard(d) {
       <div class="kpi"><div class="kpi-label">Promedio</div><div class="kpi-value">${fmt(d.totalBruto/d.cantFacturas)}</div><div class="kpi-sub">Por factura</div></div>
     </div>
     <div class="chart-section">
-      <div class="chart-title">Facturas por cliente</div>
-      <div style="position:relative;height:260px"><canvas id="chartFactCli"></canvas></div>
+      <div class="chart-title">Ventas por mes</div>
+      <div style="position:relative;height:220px"><canvas id="chartFactCli"></canvas></div>
     </div>
     <div class="chart-section">
       <div class="chart-title">Top clientes</div>
@@ -959,16 +959,25 @@ function renderDashboard(d) {
   const BLUES = ['#1F4E79','#2e6fad','#4a9ed6','#7dc3e8','#b0daf5','#d6eefc'];
   const GREENS = ['#1E5C3A','#2e8b57','#3cb371','#66cdaa','#98d8b0','#c5ecd5','#e2f7eb','#f0fbf4','#a8d8b9','#7bc4a0','#52a87d','#3d7a5c','#2a5a3f','#1a3d28'];
 
+  const mesesOrder = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+  const mesesNom = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const porMesMap = {};
+  (d.porMes||[]).forEach(m => { porMesMap[m.mes] = m.bruto; });
+  const anio = new Date().getFullYear();
+  const mesLabels = mesesNom;
+  const mesData = mesesOrder.map(n => porMesMap[n+'/'+anio] || 0);
   new Chart(document.getElementById('chartFactCli'), {
-    type:'bar', data:{labels:d.topClientes.map(c=>c.cliente.split(' ')[0]),datasets:[{label:'Facturas',data:d.topClientes.map(c=>c.facturas),backgroundColor:BLUES,borderRadius:6}]},
-    options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' facturas'}}},scales:{x:{ticks:{stepSize:1,font:{size:11}},grid:{color:'#f0f0f0'}},y:{ticks:{font:{size:11}},grid:{display:false}}}}
+    type:'line',
+    data:{labels:mesLabels,datasets:[{label:'Neto',data:mesData,borderColor:'#2e6fad',backgroundColor:'rgba(46,111,173,0.10)',fill:true,tension:0.4,pointBackgroundColor:'#2e6fad',pointRadius:4,borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{x:{ticks:{font:{size:11}},grid:{color:'#f0f0f0'}},y:{ticks:{callback:v=>fmt(v),font:{size:10}},grid:{color:'#f0f0f0'}}}}
   });
   new Chart(document.getElementById('chartCli'), {
     type:'bar', data:{labels:d.topClientes.map(c=>c.cliente.split(' ')[0]),datasets:[{data:d.topClientes.map(c=>c.bruto),backgroundColor:BLUES,borderRadius:6}]},
     options:{indexAxis:'y',responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmt(c.raw)}}},scales:{x:{ticks:{callback:v=>fmt(v)},grid:{color:'#f0f0f0'}},y:{grid:{display:false}}}}
   });
+  const estadoColors = d.porCategoria.map(c => c.categoria === 'PAGADA' ? '#2e8b57' : '#C41E23');
   new Chart(document.getElementById('chartCat'), {
-    type:'doughnut', data:{labels:d.porCategoria.map(c=>c.categoria),datasets:[{data:d.porCategoria.map(c=>c.total),backgroundColor:GREENS,borderWidth:2,borderColor:'#fff'}]},
+    type:'doughnut', data:{labels:d.porCategoria.map(c=>c.categoria),datasets:[{data:d.porCategoria.map(c=>c.total),backgroundColor:estadoColors,borderWidth:2,borderColor:'#fff'}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}}}
   });
 }
