@@ -452,6 +452,13 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
         <button onclick="setCuentasFilter('TODAS')" id="btn-todas" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Todas</button>
         <button onclick="abrirFormFactura()" style="padding:7px 12px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--green);color:#fff;cursor:pointer">+ Nueva</button>
       </div>
+      <div id="filtro-fecha-pago" style="display:none;margin-top:8px;display:none">
+        <div style="display:flex;gap:6px">
+          <button onclick="setFechaPagoFilter(7)" id="fp-7" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid var(--border);font-size:0.78rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Últimos 7 días</button>
+          <button onclick="setFechaPagoFilter(30)" id="fp-30" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid var(--border);font-size:0.78rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Últimos 30 días</button>
+          <button onclick="setFechaPagoFilter(0)" id="fp-0" style="flex:1;padding:6px;border-radius:8px;border:none;font-size:0.78rem;font-weight:700;background:var(--blue);color:#fff;cursor:pointer">Todas</button>
+        </div>
+      </div>
     </header>
     <div class="list" id="ctas-list" style="padding-top:10px"></div>
   </div>
@@ -468,6 +475,7 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
         <div style="display:flex;justify-content:space-between;font-size:0.88rem"><span style="color:var(--sub)">Neto</span><span id="fd-neto"></span></div>
         <div style="display:flex;justify-content:space-between;font-size:0.88rem"><span style="color:var(--sub)">IVA</span><span id="fd-iva"></span></div>
         <div style="display:flex;justify-content:space-between;font-size:0.95rem;font-weight:700"><span>Total</span><span id="fd-total"></span></div>
+        <div id="fd-fecha-pago-row" style="display:none;display:flex;justify-content:space-between;font-size:0.88rem"><span style="color:var(--sub)">Fecha de pago</span><span style="color:#27ae60;font-weight:600" id="fd-fecha-pago"></span></div>
       </div>
       <button id="fd-btn" onclick="marcarPagada(this.dataset.nro)" style="width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit">Marcar factura como pagada</button>
     </div>
@@ -734,7 +742,7 @@ let PRODUCTS = [], dashLoaded = false, cliLoaded = false, ctasLoaded = false;
 let filter = 'all', sort = 'name', q = '';
 let CLIENTES = [], STATS_CLI = {};
 let currentClient = null;
-let CTAS_CTES = [], ctasFiltro = 'PENDIENTE';
+let CTAS_CTES = [], ctasFiltro = 'PENDIENTE', ctasDiasFiltro = 0;
 
 // ── LOGIN ──
 function doLogin() {
@@ -1417,15 +1425,40 @@ async function loadCtasCtes() {
 
 function setCuentasFilter(f) {
   ctasFiltro = f;
+  ctasDiasFiltro = 0;
   ['PENDIENTE','PAGADA','TODAS'].forEach(x => {
     const btn = document.getElementById('btn-'+x.toLowerCase());
     if (btn) { btn.style.background = x===f ? 'var(--red)' : '#fff'; btn.style.color = x===f ? '#fff' : 'var(--sub)'; btn.style.border = x===f ? 'none' : '1.5px solid var(--border)'; }
+  });
+  const filtroFecha = document.getElementById('filtro-fecha-pago');
+  filtroFecha.style.display = f === 'PAGADA' ? 'block' : 'none';
+  setFechaPagoFilter(0);
+}
+
+function setFechaPagoFilter(dias) {
+  ctasDiasFiltro = dias;
+  [7, 30, 0].forEach(d => {
+    const btn = document.getElementById('fp-'+d);
+    if (btn) { btn.style.background = d===dias ? 'var(--blue)' : '#fff'; btn.style.color = d===dias ? '#fff' : 'var(--sub)'; btn.style.border = d===dias ? 'none' : '1.5px solid var(--border)'; }
   });
   renderCtasCtes();
 }
 
 function renderCtasCtes() {
-  const lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
+  let lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
+  if (ctasFiltro === 'PAGADA' && ctasDiasFiltro > 0) {
+    const desde = new Date(); desde.setDate(desde.getDate() - ctasDiasFiltro);
+    lista = lista.filter(f => {
+      if (!f.FECHA_PAGO) return false;
+      const parts = f.FECHA_PAGO.split('/');
+      if (parts.length < 3) return false;
+      return new Date(parts[2], parts[1]-1, parts[0]) >= desde;
+    });
+  }
+  if (ctasFiltro === 'PAGADA') lista = [...lista].sort((a,b) => {
+    const toDate = s => { if(!s) return 0; const p=s.split('/'); return p.length===3?new Date(p[2],p[1]-1,p[0]).getTime():0; };
+    return toDate(b.FECHA_PAGO) - toDate(a.FECHA_PAGO);
+  });
   const pendientes = CTAS_CTES.filter(f => f.ESTADO === 'PENDIENTE');
   const totalPend = pendientes.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
   document.getElementById('ctas-hcount').textContent = `${pendientes.length} pendientes · ARS ${fmt(totalPend)}`;
@@ -1480,7 +1513,15 @@ function abrirDetalleFactura(nroFactura) {
   document.getElementById('fd-neto').textContent = 'ARS ' + fmt(parseFloat(f.NETO)||0);
   document.getElementById('fd-iva').textContent = 'ARS ' + fmt(parseFloat(f.IVA)||0);
   document.getElementById('fd-total').textContent = 'ARS ' + fmt(parseFloat(f.TOTAL)||0);
+  const fechaPagoRow = document.getElementById('fd-fecha-pago-row');
+  if (f.FECHA_PAGO) {
+    document.getElementById('fd-fecha-pago').textContent = f.FECHA_PAGO;
+    fechaPagoRow.style.display = 'flex';
+  } else {
+    fechaPagoRow.style.display = 'none';
+  }
   document.getElementById('fd-btn').dataset.nro = nroFactura;
+  document.getElementById('fd-btn').style.display = f.ESTADO === 'PAGADA' ? 'none' : 'block';
   document.getElementById('overlay-factura-detalle').style.display = 'flex';
   lockBody();
 }
@@ -1493,7 +1534,7 @@ async function marcarPagada(nroFactura) {
     const d = await (await fetch(`${API}?${params}`)).json();
     if (d.error) throw new Error(d.error);
     const f = CTAS_CTES.find(x => x.NRO_FACTURA === nroFactura);
-    if (f) f.ESTADO = 'PAGADA';
+    if (f) { f.ESTADO = 'PAGADA'; f.FECHA_PAGO = new Date().toLocaleDateString('es-AR'); }
     document.getElementById('overlay-factura-detalle').style.display = 'none';
     unlockBody();
     renderCtasCtes();
