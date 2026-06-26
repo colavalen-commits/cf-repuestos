@@ -884,6 +884,7 @@ addSwipeClose('prov-edit-overlay', () => { document.getElementById('prov-edit-ov
 addSwipeClose('prov-prod-overlay', () => { document.getElementById('prov-prod-overlay').classList.remove('open'); unlockBody(); });
 addSwipeClose('menu-overlay', () => { document.getElementById('menu-overlay').style.display='none'; unlockBody(); });
 addSwipeClose('overlay-factura', () => { document.getElementById('overlay-factura').style.display='none'; unlockBody(); });
+addSwipeClose('overlay-factura-detalle', () => { document.getElementById('overlay-factura-detalle').style.display='none'; unlockBody(); });
 
 function showTab(name) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
