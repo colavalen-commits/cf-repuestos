@@ -430,6 +430,30 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     <div class="list" id="prov-list-container" style="padding-top:10px"></div>
   </div>
 
+  <!-- TAB: CUENTAS CORRIENTES -->
+  <div class="tab-content" id="tab-cuentas">
+    <header>
+      <div class="header-top">
+        <svg width="90" height="26" viewBox="0 0 220 60" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="30,2 58,30 30,58 2,30" fill="white" stroke="rgba(255,255,255,0.4)" stroke-width="1.5"/>
+          <text x="30" y="35" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="16" fill="#C0392B">SC</text>
+          <rect x="50" y="8" width="168" height="44" rx="3" fill="rgba(255,255,255,0.2)"/>
+          <text x="134" y="40" text-anchor="middle" font-family="Arial Black,Arial,sans-serif" font-weight="900" font-size="28" fill="white" letter-spacing="1">COLFER</text>
+        </svg>
+        <div style="flex:1">
+          <div style="font-size:0.75rem;opacity:0.75;font-weight:600">CUENTAS CORRIENTES</div>
+          <div class="header-sub" id="ctas-hcount">Cargando...</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:10px">
+        <button onclick="setCuentasFilter('PENDIENTE')" id="btn-pendiente" style="flex:1;padding:7px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--red);color:#fff;cursor:pointer">Pendientes</button>
+        <button onclick="setCuentasFilter('PAGADA')" id="btn-pagada" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Pagadas</button>
+        <button onclick="setCuentasFilter('TODAS')" id="btn-todas" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Todas</button>
+      </div>
+    </header>
+    <div class="list" id="ctas-list" style="padding-top:10px"></div>
+  </div>
+
   <!-- BOTTOM NAV -->
   <nav>
     <button class="active" onclick="showTab('catalogo')" id="nav-catalogo">
@@ -460,6 +484,7 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
       <button onclick="menuGo('agregar')" class="menu-btn">➕ Agregar</button>
       <button onclick="menuGo('clientes')" class="menu-btn">👥 Clientes</button>
       <button onclick="menuGo('dashboard')" class="menu-btn">📊 Dashboard</button>
+      <button onclick="menuGo('cuentas')" class="menu-btn">💰 Cuentas Corrientes</button>
     </div>
   </div>
 </div>
@@ -663,10 +688,11 @@ function findClientStats(nombre) {
   return null;
 }
 
-let PRODUCTS = [], dashLoaded = false, cliLoaded = false;
+let PRODUCTS = [], dashLoaded = false, cliLoaded = false, ctasLoaded = false;
 let filter = 'all', sort = 'name', q = '';
 let CLIENTES = [], STATS_CLI = {};
 let currentClient = null;
+let CTAS_CTES = [], ctasFiltro = 'PENDIENTE';
 
 // ── LOGIN ──
 function doLogin() {
@@ -806,10 +832,12 @@ function showTab(name) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
   document.getElementById('tab-'+name).classList.add('active');
-  document.getElementById('nav-'+name).classList.add('active');
+  const navBtn = document.getElementById('nav-'+name);
+  if (navBtn) navBtn.classList.add('active');
   if (name==='dashboard' && !dashLoaded) loadDashboard();
   if (name==='clientes' && !cliLoaded) loadClientes();
   if (name==='proveedores' && !provLoaded) loadProveedores();
+  if (name==='cuentas' && !ctasLoaded) loadCtasCtes();
 }
 
 // ── DASHBOARD ──
@@ -1306,6 +1334,90 @@ async function submitVenta() {
     recargarCatalogo();
   } catch(e) { showMsg('v-err','Error: '+e.message); }
   btn.disabled=false; btn.textContent='Registrar venta';
+}
+
+// ── CUENTAS CORRIENTES ──
+async function loadCtasCtes() {
+  document.getElementById('ctas-list').innerHTML = '<div class="loading"><div class="spinner"></div><p>Cargando cuentas...</p></div>';
+  try {
+    const res = await fetch(`${API}?key=${KEY}&action=getCtasCtes`);
+    const data = await res.json();
+    if (data.error) throw new Error(data.error);
+    CTAS_CTES = data;
+    ctasLoaded = true;
+    renderCtasCtes();
+  } catch(e) {
+    document.getElementById('ctas-list').innerHTML = '<div class="empty"><div class="emoji">⚠️</div><p>No se pudo cargar</p></div>';
+  }
+}
+
+function setCuentasFilter(f) {
+  ctasFiltro = f;
+  ['PENDIENTE','PAGADA','TODAS'].forEach(x => {
+    const btn = document.getElementById('btn-'+x.toLowerCase());
+    if (btn) { btn.style.background = x===f ? 'var(--red)' : '#fff'; btn.style.color = x===f ? '#fff' : 'var(--sub)'; btn.style.border = x===f ? 'none' : '1.5px solid var(--border)'; }
+  });
+  renderCtasCtes();
+}
+
+function renderCtasCtes() {
+  const lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
+  const pendientes = CTAS_CTES.filter(f => f.ESTADO === 'PENDIENTE');
+  const totalPend = pendientes.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
+  document.getElementById('ctas-hcount').textContent = `${pendientes.length} pendientes · $${fmt(totalPend)}`;
+
+  if (!lista.length) {
+    document.getElementById('ctas-list').innerHTML = '<div class="empty"><div class="emoji">✅</div><p>No hay facturas en esta categoría</p></div>';
+    return;
+  }
+
+  // Agrupar por cliente
+  const porCliente = {};
+  lista.forEach(f => {
+    if (!porCliente[f.CLIENTE]) porCliente[f.CLIENTE] = [];
+    porCliente[f.CLIENTE].push(f);
+  });
+
+  let html = '';
+  Object.entries(porCliente).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([cliente, facturas]) => {
+    const total = facturas.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
+    html += `<div class="card" style="margin-bottom:12px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+        <div style="font-weight:700;font-size:0.95rem">${cliente}</div>
+        <div style="font-weight:700;color:var(--red)">$${fmt(total)}</div>
+      </div>`;
+    facturas.sort((a,b) => (b.FECHA_VENCIMIENTO||'').localeCompare(a.FECHA_VENCIMIENTO||'')).forEach(f => {
+      const pagada = f.ESTADO === 'PAGADA';
+      const vencida = !pagada && f.FECHA_VENCIMIENTO && f.FECHA_VENCIMIENTO < new Date().toISOString().slice(0,10);
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border)">
+        <div>
+          <div style="font-size:0.82rem;font-weight:600">${f.NRO_FACTURA}</div>
+          <div style="font-size:0.75rem;color:${vencida?'var(--red)':'var(--sub)'}">Vence: ${fmtMes(f.FECHA_VENCIMIENTO)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="text-align:right">
+            <div style="font-size:0.85rem;font-weight:700">$${fmt(parseFloat(f.TOTAL)||0)}</div>
+            <div style="font-size:0.72rem;color:${pagada?'#27ae60':'var(--red)'}">● ${f.ESTADO}</div>
+          </div>
+          ${!pagada ? `<button onclick="marcarPagada('${f.NRO_FACTURA}')" style="background:var(--green);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:0.75rem;font-weight:700;cursor:pointer">Pagada</button>` : ''}
+        </div>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('ctas-list').innerHTML = `<div style="padding:0 12px">${html}</div>`;
+}
+
+async function marcarPagada(nroFactura) {
+  if (!confirm(`¿Marcar ${nroFactura} como PAGADA?`)) return;
+  try {
+    const params = new URLSearchParams({ key:KEY, action:'updateCtaCte', nro_factura: nroFactura, estado: 'PAGADA' });
+    const d = await (await fetch(`${API}?${params}`)).json();
+    if (d.error) throw new Error(d.error);
+    const f = CTAS_CTES.find(x => x.NRO_FACTURA === nroFactura);
+    if (f) f.ESTADO = 'PAGADA';
+    renderCtasCtes();
+  } catch(e) { alert('Error: ' + e.message); }
 }
 
 function openMenu() {
