@@ -1453,13 +1453,13 @@ function renderCtasCtes() {
     facturas.sort((a,b) => (b.FECHA_VENCIMIENTO||'').localeCompare(a.FECHA_VENCIMIENTO||'')).forEach(f => {
       const pagada = f.ESTADO === 'PAGADA';
       const vencida = !pagada && f.FECHA_VENCIMIENTO && f.FECHA_VENCIMIENTO < new Date().toISOString().slice(0,10);
-      const clickable = !pagada ? `onclick="abrirDetalleFactura('${f.NRO_FACTURA}')" style="cursor:pointer"` : '';
-      html += `<div ${clickable} style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border);${!pagada?'cursor:pointer':''}">
-        <div>
-          <div style="font-size:0.85rem;font-weight:600">${f.NRO_FACTURA}</div>
+      const clickAttr = !pagada ? `onclick="abrirDetalleFactura('${f.NRO_FACTURA}')"` : '';
+      html += `<div ${clickAttr} style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);${!pagada?'cursor:pointer':''}">
+        <div style="min-width:0">
+          <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.NRO_FACTURA}</div>
           <div style="font-size:0.77rem;color:${vencida?'var(--red)':'var(--sub)'}">Vence: ${fmtMes(f.FECHA_VENCIMIENTO)}</div>
         </div>
-        <div style="text-align:right">
+        <div style="text-align:right;white-space:nowrap;flex-shrink:0">
           <div style="font-size:0.88rem;font-weight:700">ARS ${fmt(parseFloat(f.TOTAL)||0)}</div>
           <div style="font-size:0.74rem;color:${pagada?'#27ae60':'var(--red)'}">● ${f.ESTADO}</div>
         </div>
