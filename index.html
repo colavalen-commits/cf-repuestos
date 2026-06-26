@@ -13,6 +13,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
+body.modal-open{overflow:hidden;position:fixed;width:100%;}
 :root{
   --blue:#1F4E79;--blue2:#2e6fad;--red:#C0392B;--green:#1E5C3A;
   --bg:#f4f6f8;--card:#fff;--text:#1a1a2e;--sub:#666;--border:#e0e0e0;--nota:#fff8e1;
@@ -585,7 +586,7 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     <div class="modal-handle"></div>
     <div class="cli-edit-modal-header">
       <h3>Editar contactos</h3>
-      <button class="cli-edit-close" onclick="document.getElementById('prov-edit-overlay').classList.remove('open')">×</button>
+      <button class="cli-edit-close" onclick="document.getElementById('prov-edit-overlay').classList.remove('open');unlockBody()">×</button>
     </div>
     <div class="cli-edit-form">
       <div id="pe-contactos-list"></div>
@@ -607,7 +608,7 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     <div class="modal-handle"></div>
     <div class="cli-edit-modal-header">
       <h3 id="pp-title">Editar producto</h3>
-      <button class="cli-edit-close" onclick="document.getElementById('prov-prod-overlay').classList.remove('open')">×</button>
+      <button class="cli-edit-close" onclick="document.getElementById('prov-prod-overlay').classList.remove('open');unlockBody()">×</button>
     </div>
     <div class="cli-edit-form">
       <div class="form-group">
@@ -641,7 +642,7 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
     <div class="modal-handle"></div>
     <div class="cli-edit-modal-header">
       <h3>Editar cliente</h3>
-      <button class="cli-edit-close" onclick="document.getElementById('cli-edit-overlay').classList.remove('open')">×</button>
+      <button class="cli-edit-close" onclick="document.getElementById('cli-edit-overlay').classList.remove('open');unlockBody()">×</button>
     </div>
     <div class="cli-edit-form">
       <div class="form-group">
@@ -846,8 +847,13 @@ function openModal(idx) {
   ).join('') + (p.notas?`<div class="modal-nota"><strong>⚠️ Distintos precios registrados</strong>${p.notas.replace('Precios distintos: ','')}</div>`:'');
   document.getElementById('overlay').classList.add('open');
   document.getElementById('modal').scrollTop=0;
+  lockBody();
 }
-function closeModal(e) { if(e.target===document.getElementById('overlay')) document.getElementById('overlay').classList.remove('open'); }
+function closeModal(e) { if(e.target===document.getElementById('overlay')) { document.getElementById('overlay').classList.remove('open'); unlockBody(); } }
+let _scrollY = 0;
+function lockBody() { _scrollY = window.scrollY; document.body.style.top = `-${_scrollY}px`; document.body.classList.add('modal-open'); }
+function unlockBody() { document.body.classList.remove('modal-open'); document.body.style.top = ''; window.scrollTo(0, _scrollY); }
+
 function addSwipeClose(elId, closeFn) {
   const el = document.getElementById(elId);
   if (!el) return;
@@ -855,12 +861,12 @@ function addSwipeClose(elId, closeFn) {
   el.addEventListener('touchstart', e => { sy = e.touches[0].clientY; }, {passive:true});
   el.addEventListener('touchend', e => { if (e.changedTouches[0].clientY - sy > 80) closeFn(); });
 }
-addSwipeClose('modal', () => document.getElementById('overlay').classList.remove('open'));
-addSwipeClose('cli-edit-overlay', () => document.getElementById('cli-edit-overlay').classList.remove('open'));
-addSwipeClose('prov-edit-overlay', () => document.getElementById('prov-edit-overlay').classList.remove('open'));
-addSwipeClose('prov-prod-overlay', () => document.getElementById('prov-prod-overlay').classList.remove('open'));
-addSwipeClose('menu-overlay', () => document.getElementById('menu-overlay').style.display='none');
-addSwipeClose('overlay-factura', () => document.getElementById('overlay-factura').style.display='none');
+addSwipeClose('modal', () => { document.getElementById('overlay').classList.remove('open'); unlockBody(); });
+addSwipeClose('cli-edit-overlay', () => { document.getElementById('cli-edit-overlay').classList.remove('open'); unlockBody(); });
+addSwipeClose('prov-edit-overlay', () => { document.getElementById('prov-edit-overlay').classList.remove('open'); unlockBody(); });
+addSwipeClose('prov-prod-overlay', () => { document.getElementById('prov-prod-overlay').classList.remove('open'); unlockBody(); });
+addSwipeClose('menu-overlay', () => { document.getElementById('menu-overlay').style.display='none'; unlockBody(); });
+addSwipeClose('overlay-factura', () => { document.getElementById('overlay-factura').style.display='none'; unlockBody(); });
 
 function showTab(name) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
@@ -1065,11 +1071,14 @@ function openClientEdit() {
   if (!contacts.length) contacts = [{nombre:'',tel:''}];
   contacts.forEach(ct => addContactRow('e-contactos-list', ct.nombre, ct.tel));
   document.getElementById('cli-edit-overlay').classList.add('open');
+  lockBody();
 }
 
 function closeClientEdit(e) {
-  if (!e || e.target === document.getElementById('cli-edit-overlay'))
+  if (!e || e.target === document.getElementById('cli-edit-overlay')) {
     document.getElementById('cli-edit-overlay').classList.remove('open');
+    unlockBody();
+  }
 }
 
 async function submitClientEdit() {
@@ -1097,7 +1106,7 @@ async function submitClientEdit() {
     currentClient.TEL = document.getElementById('e-tel').value.trim();
     currentClient.CONTACTOS = contactos;
     document.getElementById('e-ok').style.display='block';
-    setTimeout(()=>{ document.getElementById('e-ok').style.display='none'; document.getElementById('cli-edit-overlay').classList.remove('open'); openClientDetail(currentClient.NOMBRE); }, 1500);
+    setTimeout(()=>{ document.getElementById('e-ok').style.display='none'; document.getElementById('cli-edit-overlay').classList.remove('open'); unlockBody(); openClientDetail(currentClient.NOMBRE); }, 1500);
   } catch(e) {
     document.getElementById('e-err').textContent='Error: '+e.message;
     document.getElementById('e-err').style.display='block';
@@ -1210,8 +1219,9 @@ function openProvEdit() {
   contacts.forEach(c => addContactRow('pe-contactos-list', c.nombre, c.tel));
   document.getElementById('pe-pago').value = currentProv.FORMA_PAGO || '';
   document.getElementById('prov-edit-overlay').classList.add('open');
+  lockBody();
 }
-function closeProvEdit(e) { if(!e||e.target===document.getElementById('prov-edit-overlay')) document.getElementById('prov-edit-overlay').classList.remove('open'); }
+function closeProvEdit(e) { if(!e||e.target===document.getElementById('prov-edit-overlay')) { document.getElementById('prov-edit-overlay').classList.remove('open'); unlockBody(); } }
 
 async function submitProvEdit() {
   if (!currentProv) return;
@@ -1239,7 +1249,7 @@ async function submitProvEdit() {
     currentProv.CONTACTOS_ALT = alts;
     currentProv.FORMA_PAGO = forma_pago;
     document.getElementById('pe-ok').style.display='block';
-    setTimeout(()=>{ document.getElementById('pe-ok').style.display='none'; document.getElementById('prov-edit-overlay').classList.remove('open'); openProvDetail(currentProv.NOMBRE); },1500);
+    setTimeout(()=>{ document.getElementById('pe-ok').style.display='none'; document.getElementById('prov-edit-overlay').classList.remove('open'); unlockBody(); openProvDetail(currentProv.NOMBRE); },1500);
   } catch(e) { document.getElementById('pe-err').textContent='Error: '+e.message; document.getElementById('pe-err').style.display='block'; setTimeout(()=>document.getElementById('pe-err').style.display='none',4000); }
   btn.disabled=false; btn.textContent='Guardar cambios';
 }
@@ -1255,6 +1265,7 @@ function openProdEdit(idx) {
   document.getElementById('pp-compra').value = p.PRECIO_COMPRA || '';
   document.getElementById('pp-venta').value = p.PRECIO_VENTA || '';
   document.getElementById('prov-prod-overlay').classList.add('open');
+  lockBody();
 }
 
 function openProdAdd() {
@@ -1267,9 +1278,10 @@ function openProdAdd() {
   document.getElementById('pp-compra').value = '';
   document.getElementById('pp-venta').value = '';
   document.getElementById('prov-prod-overlay').classList.add('open');
+  lockBody();
 }
 
-function closeProdEdit(e) { if(!e||e.target===document.getElementById('prov-prod-overlay')) document.getElementById('prov-prod-overlay').classList.remove('open'); }
+function closeProdEdit(e) { if(!e||e.target===document.getElementById('prov-prod-overlay')) { document.getElementById('prov-prod-overlay').classList.remove('open'); unlockBody(); } }
 
 async function submitProdEdit() {
   if (!currentProv) return;
@@ -1299,7 +1311,7 @@ async function submitProdEdit() {
       orig.EQUIPO = equipo; orig.PRECIO_COMPRA = compra; orig.PRECIO_VENTA = venta;
     }
     document.getElementById('pp-ok').style.display='block';
-    setTimeout(()=>{ document.getElementById('pp-ok').style.display='none'; document.getElementById('prov-prod-overlay').classList.remove('open'); renderProdProveedor(currentProv.NOMBRE); },1200);
+    setTimeout(()=>{ document.getElementById('pp-ok').style.display='none'; document.getElementById('prov-prod-overlay').classList.remove('open'); unlockBody(); renderProdProveedor(currentProv.NOMBRE); },1200);
   } catch(e) { document.getElementById('pp-err').textContent='Error: '+e.message; document.getElementById('pp-err').style.display='block'; setTimeout(()=>document.getElementById('pp-err').style.display='none',4000); }
   btn.disabled=false; btn.textContent='Guardar';
 }
@@ -1455,12 +1467,14 @@ async function marcarPagada(nroFactura) {
 }
 
 function abrirFormFactura() {
-  const ov = document.getElementById('overlay-factura');
-  ov.style.display = 'flex';
+  document.getElementById('overlay-factura').style.display = 'flex';
+  lockBody();
 }
 function cerrarFormFactura(e) {
-  if (!e || e.target === document.getElementById('overlay-factura'))
+  if (!e || e.target === document.getElementById('overlay-factura')) {
     document.getElementById('overlay-factura').style.display = 'none';
+    unlockBody();
+  }
 }
 async function submitNuevaFactura() {
   const cliente = document.getElementById('nf-cliente').value.trim();
@@ -1499,13 +1513,17 @@ function openMenu() {
   document.getElementById('nav-menu').classList.add('active');
   const el = document.getElementById('menu-overlay');
   el.style.display='flex';
+  lockBody();
 }
 function closeMenu(e) {
-  if (!e || e.target===document.getElementById('menu-overlay'))
+  if (!e || e.target===document.getElementById('menu-overlay')) {
     document.getElementById('menu-overlay').style.display='none';
+    unlockBody();
+  }
 }
 function menuGo(tab) {
   document.getElementById('menu-overlay').style.display='none';
+  unlockBody();
   showTab(tab);
 }
 
