@@ -1612,10 +1612,14 @@ function abrirFormFactura() {
   const clientes = [...new Set(CTAS_CTES.map(f => f.CLIENTE).filter(Boolean))].sort();
   const dl = document.getElementById('nf-clientes-list');
   dl.innerHTML = clientes.map(c => `<option value="${c}">`).join('');
-  // Sugerir próximo nro de factura
-  const nros = CTAS_CTES.map(f => parseInt((/(\d+)$/.exec(f.NRO_FACTURA||'') || [0,0])[1])).filter(n => n > 0);
-  const nextNro = nros.length ? Math.max(...nros) + 1 : 1;
-  document.getElementById('nf-nro').value = nextNro;
+  // Sugerir próximo nro de factura con formato real (A-00004-00001016)
+  const matches = CTAS_CTES.map(f => /^(.*-)(\d+)$/.exec(f.NRO_FACTURA||'')).filter(Boolean);
+  if (matches.length) {
+    const maxNum = Math.max(...matches.map(m => parseInt(m[2])));
+    const prefix = matches[0][1];
+    const digits = matches[0][2].length;
+    document.getElementById('nf-nro').value = prefix + String(maxNum + 1).padStart(digits, '0');
+  }
   document.getElementById('overlay-factura').style.display = 'flex';
   lockBody();
 }
