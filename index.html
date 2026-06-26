@@ -1467,7 +1467,8 @@ function renderCtasCtes() {
         <div style="font-weight:700;font-size:0.97rem">${cliente}</div>
         <div style="font-weight:700;color:var(--red);font-size:0.95rem">ARS ${fmt(total)}</div>
       </div>`;
-    facturas.sort((a,b) => (b.FECHA_VENCIMIENTO||'').localeCompare(a.FECHA_VENCIMIENTO||'')).forEach(f => {
+    const nroNum = nro => parseInt((/(\d+)$/.exec(nro||'') || [0,0])[1]) || 0;
+    facturas.sort((a,b) => nroNum(a.NRO_FACTURA) - nroNum(b.NRO_FACTURA)).forEach(f => {
       const pagada = f.ESTADO === 'PAGADA';
       const vencida = !pagada && f.FECHA_VENCIMIENTO && f.FECHA_VENCIMIENTO < new Date().toISOString().slice(0,10);
       const clickAttr = !pagada ? `onclick="abrirDetalleFactura('${f.NRO_FACTURA}')"` : '';
@@ -1544,7 +1545,10 @@ function agregarNotificacion(nroFactura, cliente) {
 }
 
 function actualizarBadge() {
-  const n = getNotifs().length;
+  const local = getNotifs();
+  const localNros = new Set(local.map(n => n.nro));
+  const pagadasExtra = (CTAS_CTES || []).filter(f => f.ESTADO === 'PAGADA' && f.FECHA_PAGO && !localNros.has(f.NRO_FACTURA)).length;
+  const n = local.length + pagadasExtra;
   const badge = document.getElementById('notif-badge');
   if (!badge) return;
   if (n > 0) { badge.style.display = 'block'; badge.textContent = n > 9 ? '9+' : n; }
@@ -1552,17 +1556,23 @@ function actualizarBadge() {
 }
 
 function abrirNotificaciones() {
-  const notifs = getNotifs();
   const lista = document.getElementById('notif-list');
-  if (!notifs.length) {
+  // Build combined list: localStorage notifs + PAGADAS from data with FECHA_PAGO
+  const localNotifs = getNotifs();
+  const localNros = new Set(localNotifs.map(n => n.nro));
+  const pagadasData = (CTAS_CTES || [])
+    .filter(f => f.ESTADO === 'PAGADA' && f.FECHA_PAGO && !localNros.has(f.NRO_FACTURA))
+    .map(f => ({ nro: f.NRO_FACTURA, cliente: f.CLIENTE, fecha: f.FECHA_PAGO, hora: '', fromData: true }));
+  const todas = [...localNotifs, ...pagadasData];
+  if (!todas.length) {
     lista.innerHTML = '<div style="text-align:center;color:var(--sub);padding:32px 0;font-size:0.9rem">Sin notificaciones</div>';
   } else {
-    lista.innerHTML = notifs.map(n => `
+    lista.innerHTML = todas.map(n => `
       <div style="padding:12px 0;border-bottom:1px solid var(--border)">
         <div style="font-size:0.88rem;font-weight:700">✅ Factura marcada como pagada</div>
         <div style="font-size:0.82rem;color:var(--sub);margin-top:3px">${n.nro}</div>
         <div style="font-size:0.8rem;color:var(--sub)">${n.cliente}</div>
-        <div style="font-size:0.75rem;color:#aaa;margin-top:2px">${n.fecha} · ${n.hora}</div>
+        <div style="font-size:0.75rem;color:#aaa;margin-top:2px">${n.fecha}${n.hora ? ' · ' + n.hora : ''}</div>
       </div>`).join('');
   }
   document.getElementById('overlay-notif').style.display = 'flex';
