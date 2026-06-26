@@ -959,8 +959,8 @@ function renderDashboard(d) {
   const BLUES = ['#1F4E79','#2e6fad','#4a9ed6','#7dc3e8','#b0daf5','#d6eefc'];
   const GREENS = ['#1E5C3A','#2e8b57','#3cb371','#66cdaa','#98d8b0','#c5ecd5','#e2f7eb','#f0fbf4','#a8d8b9','#7bc4a0','#52a87d','#3d7a5c','#2a5a3f','#1a3d28'];
 
-  const pendienteTotal = (CTAS_CTES||[]).filter(f=>f.ESTADO==='PENDIENTE').reduce((s,f)=>s+(parseFloat(f.TOTAL)||0),0);
-  const pagadoTotal = (CTAS_CTES||[]).filter(f=>f.ESTADO==='PAGADA').reduce((s,f)=>s+(parseFloat(f.TOTAL)||0),0);
+  const pendienteTotal = d.montoPendiente || 0;
+  const pagadoTotal = d.montoPagado || 0;
   new Chart(document.getElementById('chartFactCli'), {
     type:'bar',
     data:{labels:['Pendiente','Cobrado'],datasets:[{data:[pendienteTotal,pagadoTotal],backgroundColor:['#C41E23','#2e8b57'],borderRadius:8}]},
