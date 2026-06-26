@@ -1410,7 +1410,7 @@ function renderCtasCtes() {
   const lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
   const pendientes = CTAS_CTES.filter(f => f.ESTADO === 'PENDIENTE');
   const totalPend = pendientes.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
-  document.getElementById('ctas-hcount').textContent = `${pendientes.length} pendientes · $${fmt(totalPend)}`;
+  document.getElementById('ctas-hcount').textContent = `${pendientes.length} pendientes · ARS ${fmt(totalPend)}`;
 
   if (!lista.length) {
     document.getElementById('ctas-list').innerHTML = '<div class="empty"><div class="emoji">✅</div><p>No hay facturas en esta categoría</p></div>';
