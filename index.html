@@ -455,8 +455,11 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
         <button onclick="setCuentasFilter('TODAS')" id="btn-todas" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Todas</button>
         <button onclick="abrirFormFactura()" style="padding:7px 12px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--green);color:#fff;cursor:pointer">+ Nueva</button>
       </div>
-      <div style="margin-top:8px;position:relative">
-        <input id="ctas-search" oninput="renderCtasCtes()" placeholder="🔍 Buscar por nro. factura..." style="width:100%;box-sizing:border-box;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:0.88rem;font-family:inherit">
+      <div style="margin-top:8px;display:flex;gap:8px">
+        <input id="ctas-search" oninput="renderCtasCtes()" placeholder="🔍 Nro. factura..." style="flex:1;min-width:0;box-sizing:border-box;padding:9px 13px;border:1.5px solid var(--border);border-radius:8px;font-size:0.88rem;font-family:inherit">
+        <select id="ctas-cliente-filter" onchange="renderCtasCtes()" style="flex:1;min-width:0;box-sizing:border-box;padding:9px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:0.88rem;font-family:inherit;background:#fff;color:var(--text)">
+          <option value="">👤 Todos los clientes</option>
+        </select>
       </div>
     </header>
     <div class="list" id="ctas-list" style="padding-top:10px"></div>
@@ -1451,8 +1454,21 @@ function setCuentasFilter(f) {
 
 function renderCtasCtes() {
   const q = (document.getElementById('ctas-search')?.value || '').toLowerCase();
+  const clienteSel = document.getElementById('ctas-cliente-filter')?.value || '';
+
+  // Poblar select de clientes
+  const sel = document.getElementById('ctas-cliente-filter');
+  if (sel) {
+    const clientes = [...new Set(CTAS_CTES.map(f => f.CLIENTE).filter(Boolean))].sort();
+    const prev = sel.value;
+    sel.innerHTML = '<option value="">👤 Todos los clientes</option>' +
+      clientes.map(c => `<option value="${c}"${c===prev?' selected':''}>${c}</option>`).join('');
+  }
+
   let lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
   if (q) lista = lista.filter(f => (f.NRO_FACTURA||'').toLowerCase().includes(q));
+  if (clienteSel) lista = lista.filter(f => f.CLIENTE === clienteSel);
+
   const pendientes = CTAS_CTES.filter(f => f.ESTADO === 'PENDIENTE');
   const totalPend = pendientes.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
   document.getElementById('ctas-hcount').textContent = `${pendientes.length} pendientes · ARS ${fmt(totalPend)}`;
@@ -1461,6 +1477,11 @@ function renderCtasCtes() {
     document.getElementById('ctas-list').innerHTML = '<div class="empty"><div class="emoji">✅</div><p>No hay facturas en esta categoría</p></div>';
     return;
   }
+
+  const hoy = new Date(); hoy.setHours(0,0,0,0);
+  const en5dias = new Date(hoy); en5dias.setDate(en5dias.getDate() + 5);
+  const isoHoy = hoy.toISOString().slice(0,10);
+  const isoEn5 = en5dias.toISOString().slice(0,10);
 
   // Agrupar por cliente
   const porCliente = {};
@@ -1480,12 +1501,18 @@ function renderCtasCtes() {
     const nroNum = nro => parseInt((/(\d+)$/.exec(nro||'') || [0,0])[1]) || 0;
     facturas.sort((a,b) => nroNum(a.NRO_FACTURA) - nroNum(b.NRO_FACTURA)).forEach(f => {
       const pagada = f.ESTADO === 'PAGADA';
-      const vencida = !pagada && f.FECHA_VENCIMIENTO && f.FECHA_VENCIMIENTO < new Date().toISOString().slice(0,10);
+      const fv = f.FECHA_VENCIMIENTO || '';
+      const vencida = !pagada && fv && fv < isoHoy;
+      const proxima = !pagada && !vencida && fv && fv >= isoHoy && fv <= isoEn5;
       const clickAttr = !pagada ? `onclick="abrirDetalleFactura('${f.NRO_FACTURA}')"` : '';
-      html += `<div ${clickAttr} style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);${!pagada?'cursor:pointer':''}">
+      const borderLeft = vencida ? 'border-left:3px solid var(--red);padding-left:8px;'
+                       : proxima ? 'border-left:3px solid #e67e22;padding-left:8px;' : '';
+      const colorFecha = vencida ? 'var(--red)' : proxima ? '#e67e22' : 'var(--sub)';
+      const labelExtra = proxima ? ' ⚠️ próxima' : '';
+      html += `<div ${clickAttr} style="display:grid;grid-template-columns:1fr auto;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--border);${borderLeft}${!pagada?'cursor:pointer':''}">
         <div style="min-width:0">
           <div style="font-size:0.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${f.NRO_FACTURA}</div>
-          <div style="font-size:0.77rem;color:${vencida?'var(--red)':'var(--sub)'}">Vence: ${fmtMes(f.FECHA_VENCIMIENTO)}</div>
+          <div style="font-size:0.77rem;color:${colorFecha}">Vence: ${fmtMes(fv)}${labelExtra}</div>
         </div>
         <div style="text-align:right;white-space:nowrap;flex-shrink:0">
           <div style="font-size:0.88rem;font-weight:700">ARS ${fmt(parseFloat(f.TOTAL)||0)}</div>
