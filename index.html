@@ -449,9 +449,33 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
         <button onclick="setCuentasFilter('PENDIENTE')" id="btn-pendiente" style="flex:1;padding:7px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--red);color:#fff;cursor:pointer">Pendientes</button>
         <button onclick="setCuentasFilter('PAGADA')" id="btn-pagada" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Pagadas</button>
         <button onclick="setCuentasFilter('TODAS')" id="btn-todas" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Todas</button>
+        <button onclick="abrirFormFactura()" style="padding:7px 12px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--green);color:#fff;cursor:pointer">+ Nueva</button>
       </div>
     </header>
     <div class="list" id="ctas-list" style="padding-top:10px"></div>
+  </div>
+
+  <!-- MODAL NUEVA FACTURA -->
+  <div id="overlay-factura" onclick="cerrarFormFactura(event)" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end">
+    <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-height:90vh;overflow-y:auto;padding:20px 16px 32px;animation:slideUp 0.25s ease">
+      <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 18px"></div>
+      <div style="font-weight:700;font-size:1.05rem;margin-bottom:16px">Nueva Factura</div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <input id="nf-cliente" placeholder="Cliente *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-nro" placeholder="Nro. Factura *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-emision" type="date" placeholder="Fecha Emisión *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-vencimiento" type="date" placeholder="Fecha Vencimiento *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-neto" type="number" placeholder="Neto ARS *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-iva" type="number" placeholder="IVA ARS" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <input id="nf-total" type="number" placeholder="Total ARS *" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+        <select id="nf-estado" style="padding:11px 13px;border:1.5px solid var(--border);border-radius:10px;font-size:0.95rem;font-family:inherit">
+          <option value="PENDIENTE">PENDIENTE</option>
+          <option value="PAGADA">PAGADA</option>
+        </select>
+        <div id="nf-err" style="color:var(--red);font-size:0.82rem;display:none"></div>
+        <button onclick="submitNuevaFactura()" style="padding:13px;background:var(--green);color:#fff;border:none;border-radius:10px;font-size:1rem;font-weight:700;cursor:pointer;font-family:inherit;margin-top:4px">Guardar factura</button>
+      </div>
+    </div>
   </div>
 
   <!-- BOTTOM NAV -->
@@ -1381,31 +1405,31 @@ function renderCtasCtes() {
   let html = '';
   Object.entries(porCliente).sort((a,b)=>a[0].localeCompare(b[0])).forEach(([cliente, facturas]) => {
     const total = facturas.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
-    html += `<div class="card" style="margin-bottom:12px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
-        <div style="font-weight:700;font-size:0.95rem">${cliente}</div>
-        <div style="font-weight:700;color:var(--red)">$${fmt(total)}</div>
+    html += `<div class="card" style="margin-bottom:14px;padding:16px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+        <div style="font-weight:700;font-size:0.97rem">${cliente}</div>
+        <div style="font-weight:700;color:var(--red);font-size:0.95rem">ARS ${fmt(total)}</div>
       </div>`;
     facturas.sort((a,b) => (b.FECHA_VENCIMIENTO||'').localeCompare(a.FECHA_VENCIMIENTO||'')).forEach(f => {
       const pagada = f.ESTADO === 'PAGADA';
       const vencida = !pagada && f.FECHA_VENCIMIENTO && f.FECHA_VENCIMIENTO < new Date().toISOString().slice(0,10);
-      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-top:1px solid var(--border)">
+      html += `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-top:1px solid var(--border)">
         <div>
-          <div style="font-size:0.82rem;font-weight:600">${f.NRO_FACTURA}</div>
-          <div style="font-size:0.75rem;color:${vencida?'var(--red)':'var(--sub)'}">Vence: ${fmtMes(f.FECHA_VENCIMIENTO)}</div>
+          <div style="font-size:0.85rem;font-weight:600">${f.NRO_FACTURA}</div>
+          <div style="font-size:0.77rem;color:${vencida?'var(--red)':'var(--sub)'}">Vence: ${fmtMes(f.FECHA_VENCIMIENTO)}</div>
         </div>
-        <div style="display:flex;align-items:center;gap:8px">
+        <div style="display:flex;align-items:center;gap:10px">
           <div style="text-align:right">
-            <div style="font-size:0.85rem;font-weight:700">$${fmt(parseFloat(f.TOTAL)||0)}</div>
-            <div style="font-size:0.72rem;color:${pagada?'#27ae60':'var(--red)'}">● ${f.ESTADO}</div>
+            <div style="font-size:0.88rem;font-weight:700">ARS ${fmt(parseFloat(f.TOTAL)||0)}</div>
+            <div style="font-size:0.74rem;color:${pagada?'#27ae60':'var(--red)'}">● ${f.ESTADO}</div>
           </div>
-          ${!pagada ? `<button onclick="marcarPagada('${f.NRO_FACTURA}')" style="background:var(--green);color:#fff;border:none;border-radius:8px;padding:6px 10px;font-size:0.75rem;font-weight:700;cursor:pointer">Pagada</button>` : ''}
+          ${!pagada ? `<button onclick="marcarPagada('${f.NRO_FACTURA}')" style="background:var(--green);color:#fff;border:none;border-radius:8px;padding:7px 12px;font-size:0.77rem;font-weight:700;cursor:pointer">Pagada</button>` : ''}
         </div>
       </div>`;
     });
     html += '</div>';
   });
-  document.getElementById('ctas-list').innerHTML = `<div style="padding:0 12px">${html}</div>`;
+  document.getElementById('ctas-list').innerHTML = `<div style="padding:0 14px">${html}</div>`;
 }
 
 async function marcarPagada(nroFactura) {
@@ -1418,6 +1442,46 @@ async function marcarPagada(nroFactura) {
     if (f) f.ESTADO = 'PAGADA';
     renderCtasCtes();
   } catch(e) { alert('Error: ' + e.message); }
+}
+
+function abrirFormFactura() {
+  const ov = document.getElementById('overlay-factura');
+  ov.style.display = 'flex';
+}
+function cerrarFormFactura(e) {
+  if (!e || e.target === document.getElementById('overlay-factura'))
+    document.getElementById('overlay-factura').style.display = 'none';
+}
+async function submitNuevaFactura() {
+  const cliente = document.getElementById('nf-cliente').value.trim();
+  const nro = document.getElementById('nf-nro').value.trim();
+  const emision = document.getElementById('nf-emision').value;
+  const vencimiento = document.getElementById('nf-vencimiento').value;
+  const neto = document.getElementById('nf-neto').value.trim();
+  const total = document.getElementById('nf-total').value.trim();
+  const err = document.getElementById('nf-err');
+  if (!cliente || !nro || !emision || !vencimiento || !neto || !total) {
+    err.textContent = 'Completá los campos obligatorios (*)'; err.style.display = 'block'; return;
+  }
+  err.style.display = 'none';
+  const iva = document.getElementById('nf-iva').value.trim() || '0';
+  const estado = document.getElementById('nf-estado').value;
+  try {
+    const params = new URLSearchParams({ key:KEY, action:'addCtaCte',
+      cliente, nro_factura: nro,
+      fecha_emision: emision, fecha_vencimiento: vencimiento,
+      neto, iva, total, estado
+    });
+    const d = await (await fetch(`${API}?${params}`)).json();
+    if (d.error) throw new Error(d.error);
+    CTAS_CTES.unshift({ CLIENTE: cliente, NRO_FACTURA: nro,
+      FECHA_EMISION: emision, FECHA_VENCIMIENTO: vencimiento,
+      NETO: neto, IVA: iva, TOTAL: total, ESTADO: estado });
+    document.getElementById('overlay-factura').style.display = 'none';
+    ['nf-cliente','nf-nro','nf-emision','nf-vencimiento','nf-neto','nf-iva','nf-total'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('nf-estado').value = 'PENDIENTE';
+    renderCtasCtes();
+  } catch(e) { err.textContent = 'Error: ' + e.message; err.style.display = 'block'; }
 }
 
 function openMenu() {
