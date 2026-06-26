@@ -445,6 +445,9 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
           <div style="font-size:0.75rem;opacity:0.75;font-weight:600">CUENTAS CORRIENTES</div>
           <div class="header-sub" id="ctas-hcount">Cargando...</div>
         </div>
+        <button onclick="abrirNotificaciones()" style="background:none;border:none;color:#fff;font-size:1.4rem;position:relative;cursor:pointer;padding:4px">
+          🔔<span id="notif-badge" style="display:none;position:absolute;top:0;right:0;background:#e74c3c;color:#fff;border-radius:50%;font-size:0.6rem;font-weight:700;width:16px;height:16px;line-height:16px;text-align:center"></span>
+        </button>
       </div>
       <div style="display:flex;gap:8px;margin-top:10px">
         <button onclick="setCuentasFilter('PENDIENTE')" id="btn-pendiente" style="flex:1;padding:7px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--red);color:#fff;cursor:pointer">Pendientes</button>
@@ -452,15 +455,20 @@ header{background:var(--blue);color:#fff;padding:14px 16px 12px;position:sticky;
         <button onclick="setCuentasFilter('TODAS')" id="btn-todas" style="flex:1;padding:7px;border-radius:8px;border:1.5px solid var(--border);font-size:0.82rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Todas</button>
         <button onclick="abrirFormFactura()" style="padding:7px 12px;border-radius:8px;border:none;font-size:0.82rem;font-weight:700;background:var(--green);color:#fff;cursor:pointer">+ Nueva</button>
       </div>
-      <div id="filtro-fecha-pago" style="display:none;margin-top:8px;display:none">
-        <div style="display:flex;gap:6px">
-          <button onclick="setFechaPagoFilter(7)" id="fp-7" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid var(--border);font-size:0.78rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Últimos 7 días</button>
-          <button onclick="setFechaPagoFilter(30)" id="fp-30" style="flex:1;padding:6px;border-radius:8px;border:1.5px solid var(--border);font-size:0.78rem;font-weight:700;background:#fff;color:var(--sub);cursor:pointer">Últimos 30 días</button>
-          <button onclick="setFechaPagoFilter(0)" id="fp-0" style="flex:1;padding:6px;border-radius:8px;border:none;font-size:0.78rem;font-weight:700;background:var(--blue);color:#fff;cursor:pointer">Todas</button>
-        </div>
-      </div>
     </header>
     <div class="list" id="ctas-list" style="padding-top:10px"></div>
+  </div>
+
+  <!-- PANEL NOTIFICACIONES -->
+  <div id="overlay-notif" onclick="if(event.target===this){this.style.display='none';unlockBody()}" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:500;align-items:flex-end">
+    <div style="background:#fff;border-radius:20px 20px 0 0;width:100%;max-height:75vh;display:flex;flex-direction:column;animation:slideUp 0.25s ease">
+      <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:12px auto 0;flex-shrink:0"></div>
+      <div style="display:flex;justify-content:space-between;align-items:center;padding:14px 16px 10px;flex-shrink:0">
+        <div style="font-weight:700;font-size:1rem">🔔 Notificaciones</div>
+        <button onclick="limpiarNotificaciones()" style="background:none;border:none;font-size:0.78rem;color:var(--sub);cursor:pointer;font-family:inherit">Limpiar todo</button>
+      </div>
+      <div id="notif-list" style="overflow-y:auto;padding:0 16px 24px;flex:1"></div>
+    </div>
   </div>
 
   <!-- MODAL DETALLE FACTURA -->
@@ -742,7 +750,7 @@ let PRODUCTS = [], dashLoaded = false, cliLoaded = false, ctasLoaded = false;
 let filter = 'all', sort = 'name', q = '';
 let CLIENTES = [], STATS_CLI = {};
 let currentClient = null;
-let CTAS_CTES = [], ctasFiltro = 'PENDIENTE', ctasDiasFiltro = 0;
+let CTAS_CTES = [], ctasFiltro = 'PENDIENTE';
 
 // ── LOGIN ──
 function doLogin() {
@@ -765,7 +773,7 @@ if (sessionStorage.getItem('cf_auth') === '1') {
   initApp();
 }
 
-function initApp() { recargarCatalogo(); loadDashboard(); }
+function initApp() { recargarCatalogo(); loadDashboard(); actualizarBadge(); }
 
 async function recargarCatalogo() {
   document.getElementById('hcount').textContent = 'Sincronizando...';
@@ -893,6 +901,7 @@ addSwipeClose('prov-prod-overlay', () => { document.getElementById('prov-prod-ov
 addSwipeClose('menu-overlay', () => { document.getElementById('menu-overlay').style.display='none'; unlockBody(); });
 addSwipeClose('overlay-factura', () => { document.getElementById('overlay-factura').style.display='none'; unlockBody(); });
 addSwipeClose('overlay-factura-detalle', () => { document.getElementById('overlay-factura-detalle').style.display='none'; unlockBody(); });
+addSwipeClose('overlay-notif', () => { document.getElementById('overlay-notif').style.display='none'; unlockBody(); });
 
 function showTab(name) {
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
@@ -1425,40 +1434,15 @@ async function loadCtasCtes() {
 
 function setCuentasFilter(f) {
   ctasFiltro = f;
-  ctasDiasFiltro = 0;
   ['PENDIENTE','PAGADA','TODAS'].forEach(x => {
     const btn = document.getElementById('btn-'+x.toLowerCase());
     if (btn) { btn.style.background = x===f ? 'var(--red)' : '#fff'; btn.style.color = x===f ? '#fff' : 'var(--sub)'; btn.style.border = x===f ? 'none' : '1.5px solid var(--border)'; }
-  });
-  const filtroFecha = document.getElementById('filtro-fecha-pago');
-  filtroFecha.style.display = f === 'PAGADA' ? 'block' : 'none';
-  setFechaPagoFilter(0);
-}
-
-function setFechaPagoFilter(dias) {
-  ctasDiasFiltro = dias;
-  [7, 30, 0].forEach(d => {
-    const btn = document.getElementById('fp-'+d);
-    if (btn) { btn.style.background = d===dias ? 'var(--blue)' : '#fff'; btn.style.color = d===dias ? '#fff' : 'var(--sub)'; btn.style.border = d===dias ? 'none' : '1.5px solid var(--border)'; }
   });
   renderCtasCtes();
 }
 
 function renderCtasCtes() {
-  let lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
-  if (ctasFiltro === 'PAGADA' && ctasDiasFiltro > 0) {
-    const desde = new Date(); desde.setDate(desde.getDate() - ctasDiasFiltro);
-    lista = lista.filter(f => {
-      if (!f.FECHA_PAGO) return false;
-      const parts = f.FECHA_PAGO.split('/');
-      if (parts.length < 3) return false;
-      return new Date(parts[2], parts[1]-1, parts[0]) >= desde;
-    });
-  }
-  if (ctasFiltro === 'PAGADA') lista = [...lista].sort((a,b) => {
-    const toDate = s => { if(!s) return 0; const p=s.split('/'); return p.length===3?new Date(p[2],p[1]-1,p[0]).getTime():0; };
-    return toDate(b.FECHA_PAGO) - toDate(a.FECHA_PAGO);
-  });
+  const lista = ctasFiltro === 'TODAS' ? CTAS_CTES : CTAS_CTES.filter(f => f.ESTADO === ctasFiltro);
   const pendientes = CTAS_CTES.filter(f => f.ESTADO === 'PENDIENTE');
   const totalPend = pendientes.reduce((s,f) => s + (parseFloat(f.TOTAL)||0), 0);
   document.getElementById('ctas-hcount').textContent = `${pendientes.length} pendientes · ARS ${fmt(totalPend)}`;
@@ -1534,7 +1518,7 @@ async function marcarPagada(nroFactura) {
     const d = await (await fetch(`${API}?${params}`)).json();
     if (d.error) throw new Error(d.error);
     const f = CTAS_CTES.find(x => x.NRO_FACTURA === nroFactura);
-    if (f) { f.ESTADO = 'PAGADA'; f.FECHA_PAGO = new Date().toLocaleDateString('es-AR'); }
+    if (f) { f.ESTADO = 'PAGADA'; f.FECHA_PAGO = new Date().toLocaleDateString('es-AR'); agregarNotificacion(f.NRO_FACTURA, f.CLIENTE); }
     document.getElementById('overlay-factura-detalle').style.display = 'none';
     unlockBody();
     renderCtasCtes();
@@ -1542,6 +1526,53 @@ async function marcarPagada(nroFactura) {
     alert('Error: ' + e.message);
     btn.disabled = false; btn.textContent = 'Marcar factura como pagada';
   }
+}
+
+// ── NOTIFICACIONES ──
+function getNotifs() { return JSON.parse(localStorage.getItem('cf_notifs') || '[]'); }
+function saveNotifs(n) { localStorage.setItem('cf_notifs', JSON.stringify(n)); }
+
+function agregarNotificacion(nroFactura, cliente) {
+  const notifs = getNotifs();
+  const ahora = new Date();
+  const hora = ahora.toLocaleTimeString('es-AR', {hour:'2-digit', minute:'2-digit'});
+  const fecha = ahora.toLocaleDateString('es-AR');
+  notifs.unshift({ nro: nroFactura, cliente, fecha, hora });
+  if (notifs.length > 50) notifs.pop();
+  saveNotifs(notifs);
+  actualizarBadge();
+}
+
+function actualizarBadge() {
+  const n = getNotifs().length;
+  const badge = document.getElementById('notif-badge');
+  if (!badge) return;
+  if (n > 0) { badge.style.display = 'block'; badge.textContent = n > 9 ? '9+' : n; }
+  else { badge.style.display = 'none'; }
+}
+
+function abrirNotificaciones() {
+  const notifs = getNotifs();
+  const lista = document.getElementById('notif-list');
+  if (!notifs.length) {
+    lista.innerHTML = '<div style="text-align:center;color:var(--sub);padding:32px 0;font-size:0.9rem">Sin notificaciones</div>';
+  } else {
+    lista.innerHTML = notifs.map(n => `
+      <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+        <div style="font-size:0.88rem;font-weight:700">✅ Factura marcada como pagada</div>
+        <div style="font-size:0.82rem;color:var(--sub);margin-top:3px">${n.nro}</div>
+        <div style="font-size:0.8rem;color:var(--sub)">${n.cliente}</div>
+        <div style="font-size:0.75rem;color:#aaa;margin-top:2px">${n.fecha} · ${n.hora}</div>
+      </div>`).join('');
+  }
+  document.getElementById('overlay-notif').style.display = 'flex';
+  lockBody();
+}
+
+function limpiarNotificaciones() {
+  saveNotifs([]);
+  actualizarBadge();
+  document.getElementById('notif-list').innerHTML = '<div style="text-align:center;color:var(--sub);padding:32px 0;font-size:0.9rem">Sin notificaciones</div>';
 }
 
 function abrirFormFactura() {
