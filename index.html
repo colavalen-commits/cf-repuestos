@@ -959,19 +959,8 @@ function renderDashboard(d) {
   const BLUES = ['#1F4E79','#2e6fad','#4a9ed6','#7dc3e8','#b0daf5','#d6eefc'];
   const GREENS = ['#1E5C3A','#2e8b57','#3cb371','#66cdaa','#98d8b0','#c5ecd5','#e2f7eb','#f0fbf4','#a8d8b9','#7bc4a0','#52a87d','#3d7a5c','#2a5a3f','#1a3d28'];
 
-  const mesesNomMap = {'01':'Ene','02':'Feb','03':'Mar','04':'Abr','05':'May','06':'Jun','07':'Jul','08':'Ago','09':'Sep','10':'Oct','11':'Nov','12':'Dic'};
-  // Deduplicate by mes key, then sort by year+month numerically
-  const porMesDedup = {};
-  (d.porMes||[]).forEach(m => {
-    if (!porMesDedup[m.mes]) porMesDedup[m.mes] = 0;
-    porMesDedup[m.mes] += m.bruto;
-  });
-  const porMesSorted = Object.entries(porMesDedup).sort((a,b)=>{
-    const [ma,ya] = a[0].split('/'); const [mb,yb] = b[0].split('/');
-    return (parseInt(ya)*100+parseInt(ma)) - (parseInt(yb)*100+parseInt(mb));
-  });
-  const mesLabels = porMesSorted.map(([mes]) => { const [mm,yy] = mes.split('/'); return (mesesNomMap[mm]||mm)+' '+yy; });
-  const mesData = porMesSorted.map(([,bruto]) => bruto);
+  const mesLabels = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+  const mesData = d.porMes || Array(12).fill(0);
   new Chart(document.getElementById('chartFactCli'), {
     type:'line',
     data:{labels:mesLabels,datasets:[{label:'Neto',data:mesData,borderColor:'#2e6fad',backgroundColor:'rgba(46,111,173,0.10)',fill:true,tension:0.4,pointBackgroundColor:'#2e6fad',pointRadius:4,borderWidth:2}]},
