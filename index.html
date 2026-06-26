@@ -938,9 +938,9 @@ function fmt(n) {
 function renderDashboard(d) {
   document.getElementById('dash-content').innerHTML = `
     <div class="kpi-grid">
-      <div class="kpi"><div class="kpi-label">Total c/IVA</div><div class="kpi-value" style="color:#2e6fad">${fmt(d.totalConIva)}</div><div class="kpi-sub">Facturación total</div></div>
+      <div class="kpi"><div class="kpi-label">Total c/IVA</div><div class="kpi-value">${fmt(d.totalConIva)}</div><div class="kpi-sub">Facturación total</div></div>
       <div class="kpi"><div class="kpi-label">Total s/IVA</div><div class="kpi-value green">${fmt(d.totalBruto)}</div><div class="kpi-sub">Facturación neta</div></div>
-      <div class="kpi"><div class="kpi-label">Último mes</div><div class="kpi-value">${fmt(d.porMes[new Date().getMonth()])}</div><div class="kpi-sub">Ventas del mes</div></div>
+      <div class="kpi"><div class="kpi-label">Mes anterior</div><div class="kpi-value">${fmt(d.porMes[new Date().getMonth()-1 < 0 ? 11 : new Date().getMonth()-1])}</div><div class="kpi-sub">Ventas del mes</div></div>
       <div class="kpi"><div class="kpi-label">Facturas</div><div class="kpi-value">${d.cantFacturas}</div><div class="kpi-sub">Emitidas</div></div>
     </div>
     <div class="chart-section">
